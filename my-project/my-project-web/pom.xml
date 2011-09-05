@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /*********************************************************************************
+ *
+ * Copyright 2011 - 2011 Yota Lab LLC, Russia
+ * Copyright 2011 - 2011 Seconca Holdings Limited, Cyprus
+ *
+ *  This source code is Yota Lab Confidential Proprietary
+ *  This software is protected by copyright.  All rights and titles are reserved.
+ *  You shall not use, copy, distribute, modify, decompile, disassemble or reverse
+ *  engineer the software. Otherwise this violation would be treated by law and
+ *  would be subject to legal prosecution.  Legal use of the software provides
+ *  receipt of a license from the right holder only.
+ *
+ *
+ **********************************************************************************/
+ --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--
+              -->
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>test.group</groupId>
+    <artifactId>my-project-web</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>TOP : SHOWCASE : HELLO-WORLD : WEB</name>
+    <organization>
+        <name>Yota</name>
+    </organization>
+    <description>Hello World web application</description>
+  
+  <!--
+              -->
+
+    <parent>
+        <groupId>test.group</groupId>
+        <artifactId>my-project</artifactId>        
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+  <!--
+              -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.0.0.M2</version>
+				
+                <configuration>         
+                    <systemProperties> 
+                        <systemProperty> 
+                           <name>javax.net.ssl.trustStore</name> 
+                           <value> ${basedir}/../crt/trusted-certs.jks</value> 
+                        </systemProperty>
+                        <systemProperty> 
+                           <name>javax.net.ssl.trustStorePassword</name> 
+                           <value>top@weblogic</value> 
+                        </systemProperty>
+                    </systemProperties>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>8080</port>
+                        </connector>
+                    </connectors>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>commons-dbcp</groupId>
+                        <artifactId>commons-dbcp</artifactId>
+                        <version>1.4</version>
+                    </dependency>    
+                    <dependency>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                        <version>1.2.16</version>
+                    </dependency>    
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
+  <!--
+              -->
+    <dependencies>
+        
+    <!--
+        ==================================================================
+        TOP SDK dependencies
+        ==================================================================
+    -->
+        <dependency>
+            <groupId>com.yota.top.sdk</groupId>
+            <artifactId>top-sdk</artifactId>
+        </dependency>
+       
+    <!--
+        ==================================================================
+        Logging dependencies
+        ==================================================================
+    -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>            
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+	<!--
+          ==================================================================
+          JEE dependencies
+          ==================================================================
+	-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+        </dependency>
+        
+         <!-- Tiles -->      
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-api</artifactId>
+            <version>${tiles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-core</artifactId>
+            <version>${tiles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-jsp</artifactId>
+            <version>${tiles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-el</artifactId>
+            <version>${tiles.version}</version>
+        </dependency>
+        
+        <!-- Spring MVC -->       
+        <dependency>
+            <groupId>cglib</groupId> 
+            <artifactId>cglib-nodep</artifactId> 
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>                        
+            <exclusions>                
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>  
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>  
+        </dependency>        
+        
+        <!--  Testing --> 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>spring</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /*********************************************************************************
+ *
+ * Copyright 2011 - 2011 Yota Lab LLC, Russia
+ * Copyright 2011 - 2011 Seconca Holdings Limited, Cyprus
+ *
+ *  This source code is Yota Lab Confidential Proprietary
+ *  This software is protected by copyright.  All rights and titles are reserved.
+ *  You shall not use, copy, distribute, modify, decompile, disassemble or reverse
+ *  engineer the software. Otherwise this violation would be treated by law and
+ *  would be subject to legal prosecution.  Legal use of the software provides
+ *  receipt of a license from the right holder only.
+ *
+ *
+ **********************************************************************************/
+ --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <!--
+              -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>test.group</groupId>
+    <artifactId>my-project</artifactId>
+    <packaging>pom</packaging>    
+    <version>1.0-SNAPSHOT</version>
+    <name>TOP : SHOWCASE : HELLO-WORLD</name>
+    <url>http://www.yota.ru</url>
+    <organization>
+        <name>Yota</name>
+    </organization>
+    <description>Hello World application demonstrates TOP API usage.</description>
+
+  <!--
+              -->
+    <properties>
+        <top.showcase.version>0.0.1-SNAPSHOT</top.showcase.version>	    
+        	
+        <compileSource>1.6</compileSource>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.outputDirectory>target/classes</project.build.outputDirectory>
+        <project.build.directory>target</project.build.directory>
+
+        <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
+        <timestamp>${maven.build.timestamp}</timestamp>    
+        
+        <top.sdk.version>0.1-SNAPSHOT</top.sdk.version>	  
+                
+        <spring.version>3.0.5.RELEASE</spring.version>                 
+        <slf4j.version>1.6.1</slf4j.version> 
+        <junit.version>4.8</junit.version>    
+        <tiles.version>2.2.2</tiles.version> 
+    </properties>
+  <!--
+              -->
+
+  <!--
+              -->
+    <dependencyManagement>
+        <dependencies>
+    <!--
+        ==================================================================
+        TOP SDK dependencies
+        ==================================================================
+    -->
+            <dependency>
+                <groupId>com.yota.top.sdk</groupId>
+                <artifactId>top-sdk</artifactId>
+                <version>${top.sdk.version}</version>
+            </dependency>
+        
+    <!--
+          ==================================================================
+          JEE dependencies
+          ==================================================================
+	-->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>jsp-api</artifactId>
+                <version>2.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>jsr250-api</artifactId>
+                <version>1.0</version>
+            </dependency>
+            
+            <!-- Spring MVC -->       
+            <dependency>
+                <groupId>cglib</groupId> 
+                <artifactId>cglib-nodep</artifactId> 
+                <version>2.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>                        
+                <version>${spring.version}</version>
+                <exclusions>                
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>  
+                <version>${spring.version}</version>          
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>  
+                <version>${spring.version}</version>          
+            </dependency>        
+        
+          <!--
+            ==================================================================
+            Logging dependencies
+            ==================================================================
+          -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.6.1</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>                                        
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.16</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>1.6.1</version>
+            </dependency>
+
+          <!--
+            ==================================================================
+            Testing
+            ==================================================================
+          -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>3.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>          
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+  <!--
+              -->
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.wsdl</include>
+                    <include>**/*.xsd</include>
+                    <include>**/*.properties</include>                    
+                </includes>
+            </resource>            
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.wsdl</include>
+                    <include>**/*.xsd</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </testResource>
+        </testResources>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <source>${compileSource}</source>
+                        <target>${compileSource}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <showDeprecation>true</showDeprecation>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.4.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.7.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4.3</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.4</version>                    
+                </plugin>
+            </plugins> 
+        </pluginManagement>
+    </build>
+
+  <modules>
+    <module>my-project-web</module>
+  </modules>
+</project>

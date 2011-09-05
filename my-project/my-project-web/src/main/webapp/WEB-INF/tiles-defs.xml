@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+
+    <definition name="baseLayout" template="/WEB-INF/tiles/baseLayout.jsp">
+        <put-attribute name="title" value="Template"/>
+        <put-attribute name="header" value="/WEB-INF/tiles/header.jsp"/>
+        <put-attribute name="body" value="/WEB-INF/tiles/body.jsp"/>
+        <put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"/>
+    </definition>
+
+    <definition name="main" extends="baseLayout">
+        <put-attribute name="title" value="Hello World"/>
+        <put-attribute name="body" value="/WEB-INF/views/main_body.jsp"/>
+    </definition>
+
+    <definition name="profile" extends="baseLayout">
+        <put-attribute name="title" value="Hello World: Profile"/>
+        <put-attribute name="body" value="/WEB-INF/views/profile_body.jsp"/>
+    </definition>
+    
+</tiles-definitions>
