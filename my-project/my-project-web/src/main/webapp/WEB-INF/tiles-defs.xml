@@ -9,17 +9,17 @@
     <definition name="baseLayout" template="/WEB-INF/tiles/baseLayout.jsp">
         <put-attribute name="title" value="Template"/>
         <put-attribute name="header" value="/WEB-INF/tiles/header.jsp"/>
-        <put-attribute name="body" value="/WEB-INF/tiles/body.jsp"/>
-        <put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"/>
+        <!--put-attribute name="body" value="/WEB-INF/tiles/body.jsp"-->
+        <!--put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"/-->
     </definition>
 
     <definition name="main" extends="baseLayout">
-        <put-attribute name="title" value="Hello World"/>
+        <put-attribute name="title" value="Google Tours"/>
         <put-attribute name="body" value="/WEB-INF/views/main_body.jsp"/>
     </definition>
 
     <definition name="profile" extends="baseLayout">
-        <put-attribute name="title" value="Hello World: Profile"/>
+        <put-attribute name="title" value="Google Tours: Profile"/>
         <put-attribute name="body" value="/WEB-INF/views/profile_body.jsp"/>
     </definition>
     

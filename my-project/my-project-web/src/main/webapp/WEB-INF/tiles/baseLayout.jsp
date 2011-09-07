@@ -17,6 +17,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="test.group.ui.bean.BuyRoutes" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
@@ -58,6 +59,8 @@
               GEvent.addListener(directions, "load", function() {
                 handle();
               });
+              $('a#charge').unbind();
+              $('a#charge').css('color', '#808080');
           }
     }
     
@@ -116,7 +119,7 @@
     }
     
     // "Show me!" button
-    function drawRoute() { 
+    function drawRoute() {
       if (driving) stopDrive();
       var route = changeTour();
       v=0;
@@ -230,8 +233,49 @@
     
     // change route button
     function changeTour() {
-        document.getElementById("draw").disabled = false;
-        var nomer = document.getElementById("country").value;
+        var handler = function(){
+   
+                var nomer = document.getElementById("country").value;
+		$('a#charge').unbind();
+		$('a#charge').css('color', '#808080');
+		$('#charge-status-msg').empty().text("Please wait...");
+	    $.ajax( { 
+	        url: "http://${serverHost}:${serverPort}/demo/pay?nomer="+nomer,
+	        dataType: "json",
+	        success: function(buy) { 
+//	            $('#charge-status-msg').empty().text("You have bought a new route: " + buy);
+                    document.getElementById("draw").disabled = false;
+	        },
+	        error: function() {                 
+	            $('#charge-status-msg').empty().text("The last payment has failed, please try again later.");
+	        },
+	        complete: function(){
+	        }
+	    });    
+	};
+        $.ajax( { 
+	        url: "http://${serverHost}:${serverPort}/demo/check?nomer="+document.getElementById("country").value,
+	        dataType: "json",
+	        success: function(exist) { 
+//	            $('#charge-status-msg').empty().text(exist);
+                    if (exist) {
+	        	$('a#charge').unbind();
+                        $('a#charge').css('color', '#808080');
+                        document.getElementById("draw").disabled = false;
+                    }    
+                    else {
+                        $('a#charge').bind('click', handler);
+	        	$('a#charge').css('color', '#0099FF');
+                        document.getElementById("draw").disabled = true;
+                    }  
+	        },
+	        error: function() {                 
+	            $('#charge-status-msg').empty().text("error");
+	        },
+	        complete: function(){
+	        }
+	 });    
+        
         return nomer-1;
     } 
     
@@ -268,7 +312,8 @@
         
         <link rel="stylesheet" type="text/css" href="../static/styles/style.css"/>
     </head>
-    <body onload="initialize()" onunload="GUnload()">
+    <body onload="initialize()" onunload="GUnload()">  
+
         <div id="container">
 
             <div id="head">
@@ -276,26 +321,29 @@
             </div>
                     
                 <div name="pano" id="pano" style="width: 700px; height: 350px"></div>  
-                <div id="map_canvas" style="width: 700px; height: 300px"></div> 
+                
+                <div id="map_canvas" style="width: 700px; height: 300px"></div>
+                
                 <b>Choose Tour:</b><br>
                 <select id="country" onchange="changeTour()">
-                <option value="1">Sights
+                <option value="1">Sights                
                 <option value="2">Impressionism
                 <option value="3">French Revolution
-                <option value="4">test
-                </select>  
+                <option value="4">test   
+                </select>
+                
                 <input type="button" value="Show Me!" id="draw"  onclick="drawRoute()" />
                 <input type="button" value="Drive Me!" id="drive"  onclick="moveRoute()" disabled/> 
     
-               
-            <div id="body">
+             <div id="body">
                 <tiles:insertAttribute name="body" />
-            </div>
-      <!--          
-           <div id="footer">
-                <tiles:insertAttribute name="footer" />
-            </div>
-      -->
+            </div>  
+                <c:if test="${empty user}">
+                <div id="pay">
+		<p id="charge-status-msg" class="info-msg"></p> 
+		<p><a href="" id="charge">Buy!</a></p>  
+                </div>
+                </c:if>
         </div>
 
     </body>

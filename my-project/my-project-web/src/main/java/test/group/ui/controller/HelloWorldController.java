@@ -37,6 +37,8 @@ import test.group.ui.bean.User;
 import test.group.ui.bean.UserProfile;
 import test.group.utils.TransactionRecordComparator;
 
+import java.util.*;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -125,6 +127,7 @@ public class HelloWorldController {
      */
     private static final String PROFILE_VIEW = "profile";
 
+    ArrayList ls = new ArrayList();
 
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
@@ -169,14 +172,19 @@ public class HelloWorldController {
 	    return new ModelAndView(PROFILE_VIEW, "errorMsg", ex.getMessage());
 	}
     }
-
+    
     @RequestMapping("/login")
-    public ModelAndView login(@RequestParam(required = false, value = REQUEST_PARAM_CODE) String code,
-	    HttpServletRequest req, HttpServletResponse res) throws TopApiException {
-	final String redirectUri = (String) req.getSession().getAttribute(REQUEST_PARAM_REDIRECT_URI);	
+    public ModelAndView login(@RequestParam(required = false, 
+            value = REQUEST_PARAM_CODE) String code,
+	    HttpServletRequest req, HttpServletResponse res) 
+            throws TopApiException {
+	final String redirectUri = 
+             (String) req.getSession().getAttribute(REQUEST_PARAM_REDIRECT_URI);	
 	if (code != null && redirectUri != null) {
-	    final String accessToken = identityServiceClient.getAccessToken(redirectUri, code);
-	    final String uid = identityServiceClient.validateAccessToken(accessToken);
+	    final String accessToken = 
+                    identityServiceClient.getAccessToken(redirectUri, code);
+	    final String uid = 
+                    identityServiceClient.validateAccessToken(accessToken);
 	    final User user = new User(uid, accessToken);
 	    req.getSession().setAttribute(SESSION_ATTR_USER, user);
 	}
@@ -194,11 +202,26 @@ public class HelloWorldController {
 
     @RequestMapping("/pay")
     public @ResponseBody
-    TransactionInfo pay(HttpServletRequest req, HttpServletResponse res) throws IOException, TopApiException {
-	final User user = getCurrentUser(req);
-	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
-		"Description", "Refcode");
-	return transactionInfo;
+            String pay(@RequestParam(required = false, value = "nomer") String nomer,
+            HttpServletRequest req, HttpServletResponse res) 
+            throws IOException {
+        
+/*
+ *  Here will be code with user payment
+ */
+        
+        ls.add(nomer);
+        return ls.toString();
+    }
+    
+    @RequestMapping("/check")
+    public @ResponseBody
+            boolean check(@RequestParam(required = false, value = "nomer") String nomer,
+            HttpServletRequest req, HttpServletResponse res) 
+            throws IOException {
+        if (ls.contains(nomer))
+                return true;
+        return false;
     }
 
     private User getCurrentUser(HttpServletRequest req) {
