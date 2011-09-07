@@ -202,16 +202,16 @@ public class HelloWorldController {
 
     @RequestMapping("/pay")
     public @ResponseBody
-            String pay(@RequestParam(required = false, value = "nomer") String nomer,
+            TransactionInfo pay(@RequestParam(required = false, value = "nomer") String nomer,
             HttpServletRequest req, HttpServletResponse res) 
-            throws IOException {
-        
-/*
- *  Here will be code with user payment
- */
+            throws IOException, TopApiException {
+       
+        final User user = getCurrentUser(req);
+	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
+		"Description", "Refcode");
         
         ls.add(nomer);
-        return ls.toString();
+        return transactionInfo;
     }
     
     @RequestMapping("/check")

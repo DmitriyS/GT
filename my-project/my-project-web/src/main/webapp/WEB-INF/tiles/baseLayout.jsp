@@ -243,7 +243,7 @@
 	        url: "http://${serverHost}:${serverPort}/demo/pay?nomer="+nomer,
 	        dataType: "json",
 	        success: function(buy) { 
-//	            $('#charge-status-msg').empty().text("You have bought a new route: " + buy);
+	            $('#charge-status-msg').empty().text("You have bought a new route, transactionId is " + buy.transactionId);
                     document.getElementById("draw").disabled = false;
 	        },
 	        error: function() {                 
@@ -341,7 +341,7 @@
                 <c:if test="${empty user}">
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
-		<p><a href="" id="charge">Buy!</a></p>  
+		<p><a href="" id="charge">Buy! (10rub)</a></p>  
                 </div>
                 </c:if>
         </div>
