@@ -17,7 +17,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="test.group.ui.bean.BuyRoutes" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
@@ -338,10 +337,10 @@
              <div id="body">
                 <tiles:insertAttribute name="body" />
             </div>  
-                <c:if test="${empty user}">
+                <c:if test="${not empty user}">
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
-		<p><a href="" id="charge">Buy! (10rub)</a></p>  
+		<p><a href="#" id="charge">Buy! (10rub)</a></p>  
                 </div>
                 </c:if>
         </div>
