@@ -123,17 +123,16 @@
       var route = changeTour();
       v=0;
       map.clearOverlays();
-      
       document.getElementById("draw").disabled = true;
       document.getElementById("drive").disabled = false;
-      
       // building route
       var points = [];
+      GLog.write('ok');
       createRoute(points, route);
-      
+      GLog.write('ok1');
       marker = new GMarker(points[0], {draggable: false});
       map.addOverlay(marker);
-      
+      GLog.write('ok2');
       // load route
       directions.loadFromWaypoints(points); // Listener catch "load" event here
     }
@@ -233,7 +232,6 @@
     // change route button
     function changeTour() {
         var handler = function(){
-   
                 var nomer = document.getElementById("country").value;
 		$('a#charge').unbind();
 		$('a#charge').css('color', '#808080');
@@ -252,8 +250,9 @@
 	        }
 	    });    
 	};
+        var nomer = document.getElementById("country").value;
         $.ajax( { 
-	        url: "http://${serverHost}:${serverPort}/demo/check?nomer="+document.getElementById("country").value,
+	        url: "http://${serverHost}:${serverPort}/demo/check?nomer="+nomer,
 	        dataType: "json",
 	        success: function(exist) { 
 //	            $('#charge-status-msg').empty().text(exist);
