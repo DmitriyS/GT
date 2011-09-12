@@ -327,7 +327,7 @@
                 <select id="country" onchange="changeTour()">
                 <option value="1">Sights                
                 <option value="2">Impressionism
-                <option value="3">French Revolution
+                <option value="3">French_Revolution
                 <option value="4">test   
                 </select>
                 

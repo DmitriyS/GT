@@ -43,6 +43,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import java.sql.*;
+import java.sql.SQLException;
+
 /**
  * @author EDemyanchik
  * {@link HelloWorldController} is intended to handle requests from Hello World application. 
@@ -128,6 +131,10 @@ public class HelloWorldController {
     private static final String PROFILE_VIEW = "profile";
 
     ArrayList ls = new ArrayList();
+    
+    private String url_db = "jdbc:postgresql://localhost:5432/";
+    private String username_db = "postgres";
+    private String password_db = "IeatH@mster5";
 
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
@@ -177,7 +184,7 @@ public class HelloWorldController {
     public ModelAndView login(@RequestParam(required = false, 
             value = REQUEST_PARAM_CODE) String code,
 	    HttpServletRequest req, HttpServletResponse res) 
-            throws TopApiException {
+            throws TopApiException, SQLException {
 	final String redirectUri = 
              (String) req.getSession().getAttribute(REQUEST_PARAM_REDIRECT_URI);	
 	if (code != null && redirectUri != null) {
@@ -188,7 +195,18 @@ public class HelloWorldController {
 	    final User user = new User(uid, accessToken);
 	    req.getSession().setAttribute(SESSION_ATTR_USER, user);
 	}
-	return new ModelAndView(new RedirectView(MAIN_VIEW));
+        
+        Statement st = connectDB(); 
+        ResultSet rs = st.executeQuery("select * from users where uid = 'user1';"); // user1 will be defined later
+        String mas[] = new String[4];
+        while (rs.next())
+             for (int i=0; i<4; i++) {
+                 mas[i] = rs.getString(i+2);
+                 if ("1".equals(mas[i]))
+                    ls.add(i+2); 
+             } 
+        
+        return new ModelAndView(new RedirectView(MAIN_VIEW));
     }
 
     @RequestMapping("/logout")
@@ -204,12 +222,14 @@ public class HelloWorldController {
     public @ResponseBody
             TransactionInfo pay(@RequestParam(required = false, value = "nomer") String nomer,
             HttpServletRequest req, HttpServletResponse res) 
-            throws IOException, TopApiException {
+            throws IOException, TopApiException, SQLException {
        
         final User user = getCurrentUser(req);
 	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
 		"Description", "Refcode");
         
+        Statement st = connectDB(); 
+        st.executeQuery("update users set " + nomer + " = 1 where uid = 'user1';"); // 'user1' will be defined later
         ls.add(nomer);
         return transactionInfo;
     }
@@ -222,6 +242,20 @@ public class HelloWorldController {
         if (ls.contains(nomer))
                 return true;
         return false;
+    }
+    
+    public Statement connectDB() throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver").newInstance();
+        } catch (Exception x) {
+            System.out.println("Unable to load the driver class!");
+            System.out.println(x.getMessage());
+        }
+        
+        Connection con = DriverManager.getConnection(url_db, username_db, password_db);
+        Statement st = con.createStatement();
+        
+        return st;
     }
 
     private User getCurrentUser(HttpServletRequest req) {
