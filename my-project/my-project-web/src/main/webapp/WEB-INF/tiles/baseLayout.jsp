@@ -41,16 +41,17 @@
     // init()
     function initialize() {
           if (GBrowserIsCompatible()) {
+              var center = new GLatLng(48.85994695776509, 2.2918617725372314);
               panoClient = new GStreetviewClient();      
               map = new GMap2(document.getElementById("map_canvas"));
-              map.setCenter(new GLatLng(48.85994695776509, 2.2918617725372314), 11);
+              map.setCenter(center, 11);
               map.addControl(new GSmallMapControl());
               map.addControl(new GMapTypeControl());
               map.enableScrollWheelZoom();
 			  
               directions = new GDirections(map);
               var houseMarker;
-              houseMarker = new GMarker(new GLatLng(48.85994695776509, 2.2918617725372314), {draggable: false});
+              houseMarker = new GMarker(center, {draggable: false});
               // panorama at screenload
               myPano = new GStreetviewPanorama(document.getElementById("pano"));
               panoClient.getNearestPanorama(houseMarker.getLatLng(), myPano.setLocationAndPOV(houseMarker.getLatLng(), {yaw: 135, pitch: 0}));
@@ -127,12 +128,9 @@
       document.getElementById("drive").disabled = false;
       // building route
       var points = [];
-      GLog.write('ok');
       createRoute(points, route);
-      GLog.write('ok1');
       marker = new GMarker(points[0], {draggable: false});
       map.addOverlay(marker);
-      GLog.write('ok2');
       // load route
       directions.loadFromWaypoints(points); // Listener catch "load" event here
     }
