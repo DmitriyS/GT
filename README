@@ -16,4 +16,22 @@
 		- run project 
 			mvn jetty:run
 		- open localhost:8080/demo/main in your browser
+		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	File named "dump.sql" is for Data Base restoring.
+	If you use PostgreSQL, do the following steps:
+		- open command prompt
+		- go to "bin" directory of PostgreSQL folder
+		- restore Data Base
+			psql [dbname] < dump.sql
+			
+	Due to this command you build 4 tables: users, routes, userroutes and routevalues. 
+		- "users" and "userroutes" are empty
+		- "routes" and "routevalues" keep information about existing routes
+		
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	Sequence_diagram folder contains picture and sourse-file of prject object's interactions arranged in time sequence
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
