@@ -322,10 +322,10 @@
                 
                 <b>Choose Tour:</b><br>
                 <select id="country" onchange="changeTour()">
-                <option value="1">Sights                
-                <option value="2">Impressionism
-                <option value="3">French_Revolution
-                <option value="4">test   
+                    <option value="1">Sights</option>                
+                    <option value="2">Impressionism</option>
+                    <option value="3">French_Revolution</option>
+                    <option value="4">test</option>   
                 </select>
                 
                 <input type="button" value="Show Me!" id="draw"  onclick="drawRoute()" />
