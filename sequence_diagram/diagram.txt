@@ -1,0 +1,20 @@
+Web-Client->Web-Service: get (url)
+Web-Service->Web-Client: 200 OK
+
+Web-Client->TOP ID UI: post (name, pass)
+alt Unkown client ID
+TOP ID UI->Web-Client: 404 Not found
+end
+TOP ID UI->Web-Service: 200 OK
+Web-Service->Web-Service: validate + DB commit
+Web-Service->Web-Client: 200 OK
+
+Web-Client->TOP Payment Enabler: get (accessToken)
+alt Charge failed
+TOP Payment Enabler->Web-Client: 404 Not found
+end
+TOP Payment Enabler->Web-Service: 200 OK
+Web-Service->Web-Service: transaction + DB commit
+Web-Service->Web-Client: 200 OK
+
+
