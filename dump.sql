@@ -54,7 +54,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE routes (
-    id numeric NOT NULL,
+    id_route numeric NOT NULL,
     description character(30)
 );
 
@@ -66,7 +66,7 @@ ALTER TABLE public.routes OWNER TO postgres;
 --
 
 CREATE TABLE routevalues (
-    id numeric NOT NULL,
+    id_route numeric NOT NULL,
     pos numeric NOT NULL,
     x double precision,
     y double precision
@@ -80,9 +80,8 @@ ALTER TABLE public.routevalues OWNER TO postgres;
 --
 
 CREATE TABLE userroutes (
-    id numeric NOT NULL,
-    id_user numeric,
-    id_route numeric
+    id_user numeric NOT NULL,
+    id_route numeric NOT NULL
 );
 
 
@@ -93,7 +92,7 @@ ALTER TABLE public.userroutes OWNER TO postgres;
 --
 
 CREATE TABLE users (
-    id numeric NOT NULL,
+    id_user numeric NOT NULL,
     name character(30),
     regdate date
 );
@@ -105,7 +104,10 @@ ALTER TABLE public.users OWNER TO postgres;
 -- Data for Name: routes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY routes (id, description) FROM stdin;
+COPY routes (id_route, description) FROM stdin;
+1	Sights                        
+2	Impression                    
+3	French_Revolution             
 \.
 
 
@@ -113,7 +115,7 @@ COPY routes (id, description) FROM stdin;
 -- Data for Name: routevalues; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY routevalues (id, pos, x, y) FROM stdin;
+COPY routevalues (id_route, pos, x, y) FROM stdin;
 1	1	48.859922252927717	2.2681403160095215
 1	2	48.85560224934877	2.3149394989013672
 1	3	48.860642217277437	2.3255610466003418
@@ -136,7 +138,7 @@ COPY routevalues (id, pos, x, y) FROM stdin;
 -- Data for Name: userroutes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY userroutes (id, id_user, id_route) FROM stdin;
+COPY userroutes (id_user, id_route) FROM stdin;
 \.
 
 
@@ -144,7 +146,7 @@ COPY userroutes (id, id_user, id_route) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY users (id, name, regdate) FROM stdin;
+COPY users (id_user, name, regdate) FROM stdin;
 \.
 
 
@@ -153,15 +155,7 @@ COPY users (id, name, regdate) FROM stdin;
 --
 
 ALTER TABLE ONLY routes
-    ADD CONSTRAINT routes_pkey PRIMARY KEY (id);
-
-
---
--- Name: routevalues_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
---
-
-ALTER TABLE ONLY routevalues
-    ADD CONSTRAINT routevalues_pkey PRIMARY KEY (id, pos);
+    ADD CONSTRAINT routes_pkey PRIMARY KEY (id_route);
 
 
 --
@@ -169,7 +163,7 @@ ALTER TABLE ONLY routevalues
 --
 
 ALTER TABLE ONLY userroutes
-    ADD CONSTRAINT userroutes_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT userroutes_pkey PRIMARY KEY (id_user, id_route);
 
 
 --
@@ -177,23 +171,15 @@ ALTER TABLE ONLY userroutes
 --
 
 ALTER TABLE ONLY users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id_user);
 
 
 --
 -- Name: userroutes_id_route_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY userroutes
-    ADD CONSTRAINT userroutes_id_route_fkey FOREIGN KEY (id_route) REFERENCES routes(id);
-
-
---
--- Name: userroutes_id_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY userroutes
-    ADD CONSTRAINT userroutes_id_user_fkey FOREIGN KEY (id_user) REFERENCES users(id);
+ALTER TABLE ONLY routevalues
+    ADD CONSTRAINT userroutes_id_route_fkey FOREIGN KEY (id_route) REFERENCES routes(id_route);
 
 
 --
