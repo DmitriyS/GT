@@ -33,18 +33,20 @@ import com.yota.top.sdk.impl.IdentityServiceClientImpl;
 import com.yota.top.sdk.impl.PaymentServiceClientImpl;
 import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
 import com.yota.top.sdk.model.payment.TransactionInfo;
-import test.group.ui.bean.User;
-import test.group.ui.bean.UserProfile;
+import test.group.ui.bean.*;
 import test.group.utils.TransactionRecordComparator;
 
 import java.util.*;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
-import java.sql.*;
-import java.sql.SQLException;
+import test.group.dbi.*;
+
+import java.util.Iterator;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /**
  * @author EDemyanchik
@@ -129,13 +131,6 @@ public class HelloWorldController {
      * The name of profile view
      */
     private static final String PROFILE_VIEW = "profile";
-
-    ArrayList ls = new ArrayList();
-    
-    private String url_db = "jdbc:postgresql://localhost:5432/";
-    private String username_db = "postgres";
-    private String password_db = "IeatH@mster5";
-
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
     private static IdentityServiceClient identityServiceClient = 
@@ -154,10 +149,10 @@ public class HelloWorldController {
 
 	req.getSession().setAttribute(SESSION_ATTR_API_KEY, API_KEY);
 	req.getSession().setAttribute(SESSION_ATTR_IDENTITY_PAGE_LOCATION, IDENTITY_PAGE_LOCATION);
-
+        
 	return new ModelAndView(MAIN_VIEW);
     }
-
+    
     @RequestMapping("/profile")
     public ModelAndView balance(HttpServletRequest req) {
 	try {
@@ -184,28 +179,17 @@ public class HelloWorldController {
     public ModelAndView login(@RequestParam(required = false, 
             value = REQUEST_PARAM_CODE) String code,
 	    HttpServletRequest req, HttpServletResponse res) 
-            throws TopApiException, SQLException {
+            throws TopApiException {
 	final String redirectUri = 
              (String) req.getSession().getAttribute(REQUEST_PARAM_REDIRECT_URI);	
 	if (code != null && redirectUri != null) {
 	    final String accessToken = 
                     identityServiceClient.getAccessToken(redirectUri, code);
-	    final String uid = 
-                    identityServiceClient.validateAccessToken(accessToken);
-	    final User user = new User(uid, accessToken);
+	    final Long id = Long.parseLong(
+                    identityServiceClient.validateAccessToken(accessToken));
+	    final User user = new User(id, accessToken);
 	    req.getSession().setAttribute(SESSION_ATTR_USER, user);
 	}
-        
-        Statement st = connectDB(); 
-        ResultSet rs = st.executeQuery("select * from users where uid = 'user1';"); // user1 will be defined later
-        String mas[] = new String[4];
-        while (rs.next())
-             for (int i=0; i<4; i++) {
-                 mas[i] = rs.getString(i+2);
-                 if ("1".equals(mas[i]))
-                    ls.add(i+2); 
-             } 
-        
         return new ModelAndView(new RedirectView(MAIN_VIEW));
     }
 
@@ -222,40 +206,21 @@ public class HelloWorldController {
     public @ResponseBody
             TransactionInfo pay(@RequestParam(required = false, value = "nomer") String nomer,
             HttpServletRequest req, HttpServletResponse res) 
-            throws IOException, TopApiException, SQLException {
+            throws IOException, TopApiException {
        
         final User user = getCurrentUser(req);
 	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
 		"Description", "Refcode");
-        
-        Statement st = connectDB(); 
-        st.executeQuery("update users set " + nomer + " = 1 where uid = 'user1';"); // 'user1' will be defined later
-        ls.add(nomer);
         return transactionInfo;
     }
     
-    @RequestMapping("/check")
+    @RequestMapping("/load")
     public @ResponseBody
-            boolean check(@RequestParam(required = false, value = "nomer") String nomer,
+            ArrayList check(@RequestParam(required = false, value = "route") String route,
             HttpServletRequest req, HttpServletResponse res) 
             throws IOException {
-        if (ls.contains(nomer))
-                return true;
-        return false;
-    }
-    
-    public Statement connectDB() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver").newInstance();
-        } catch (Exception x) {
-            System.out.println("Unable to load the driver class!");
-            System.out.println(x.getMessage());
-        }
-        
-        Connection con = DriverManager.getConnection(url_db, username_db, password_db);
-        Statement st = con.createStatement();
-        
-        return st;
+        Long nomer = Long.parseLong(route);
+        return getXY(nomer);
     }
 
     private User getCurrentUser(HttpServletRequest req) {
@@ -267,7 +232,57 @@ public class HelloWorldController {
 	    return (User) userObj;
 	}
     }
+    
+    private ArrayList getXY(Long id) {
+      ArrayList points = new ArrayList();
+      Transaction trns = null;
+      Session session = HibernateUtil.getSessionFactory().openSession();
+      try {
+       trns = session.beginTransaction();
+       List<RouteValues> rvs = session.createQuery("from RouteValues as r where r.id = :id")
+       .setLong( "id", id )
+       .list();
+       for (Iterator<RouteValues> iter = rvs.iterator(); iter.hasNext();) {
+        RouteValues rv = iter.next();
+        points.add(rv.getX()); points.add(rv.getY());
+       }
+       trns.commit();
+      } catch (RuntimeException e) {
+       if(trns != null){
+        trns.rollback();
+       }
+       e.printStackTrace();
+      } finally{
+       session.flush();
+       session.close();
+       return points;
+      } 
+    } 
 
+    
+    // usage of this func will be defined later. it fills routevalues table
+    private void addRoute (Long idUser, Long idRoute) {
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+           trns = session.beginTransaction();
+           
+           User someUser = (User) session.load(User.class, idUser);
+           Route someRoute = (Route) session.load(Route.class, idRoute);
+           someRoute.addToUser(someUser);
+           
+           trns.commit();
+      } catch (RuntimeException e) {
+           if(trns != null){
+            trns.rollback();
+           }
+           e.printStackTrace();
+      } finally{
+           session.flush();
+           session.close();
+      } 
+    }
+    
     @ExceptionHandler(TopApiException.class)
     public @ResponseBody
     com.yota.top.sdk.model.common.ErrorResponse handleTopApiException(TopApiException e, HttpServletRequest request,

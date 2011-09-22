@@ -14,6 +14,9 @@
  **********************************************************************************/
 package test.group.ui.bean;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.io.Serializable;
 
 /**
@@ -22,37 +25,81 @@ import java.io.Serializable;
  * 
  */
 public class User implements Serializable {
+
     /**
      * Serial version identifier
      */
     private static final long serialVersionUID = 1L;
-
-    private String uid;
+    private Long id;
     private String accessToken;
+    private String firstName;
+    private String lastName;
+    private Date date;
+    private Set routes = new HashSet();
 
-    
-    
     public User() {
     }
 
-    public User(String uid, String accessToken) {
-	this.uid = uid;
-	this.accessToken = accessToken;
+    public User(Long id, String accessToken) {
+        this.id = id;
+        this.accessToken = accessToken;
     }
 
-    public String getUid() {
-	return uid;
+    public Long getId() {
+        return id;
     }
 
-    public void setUid(String uid) {
-	this.uid = uid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getAccessToken() {
-	return accessToken;
+        return accessToken;
     }
 
     public void setAccessToken(String accessToken) {
-	this.accessToken = accessToken;
+        this.accessToken = accessToken;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    protected Set getRoutes() {
+        return routes;
+    }
+
+    protected void setRoutes(Set routes) {
+        this.routes = routes;
+    }
+
+    public void addToRoute(Route route) {
+        this.getRoutes().add(route);
+        route.getUsers().add(this);
+    }
+
+    public void removeFromRoute(Route route) {
+        this.getRoutes().remove(route);
+        route.getUsers().remove(this);
     }
 }

@@ -37,6 +37,7 @@
     var v;
     var driving = false;
     var yaw_pan;
+    var massiv;
 
     // init()
     function initialize() {
@@ -61,21 +62,27 @@
               });
               $('a#charge').unbind();
               $('a#charge').css('color', '#808080');
+              
+              $.ajax( { 
+                      url: "http://${serverHost}:${serverPort}/demo/check?route=1",
+                      dataType: "json",
+                      success: function(data) {
+                          massiv = data;
+                      },
+                      error: function() {   
+                      },
+                      complete: function(){
+                      }
+              });
+              
           }
     }
     
-    function createRoute(points, route) {
-        // 3-dim-massiv (route, checkpoint, coord)
-        var cityPoints =    [  
-        [[48.85992225292772, 2.2681403160095215], [48.85560224934877, 2.314939498901367] ,[48.86064221727744, 2.325561046600342], [48.860148125211126, 2.3529624938964844], [48.85913169190895, 2.362189292907715]],
-        [[48.85732817785907, 2.352168560028076], [48.856212860716944, 2.3465681076049805] ,[48.862604420477275, 2.324810028076172], [48.85380566751866, 2.312396764755249], [48.804722416109335, 2.123880386352539]],
-        [[48.832894926647285, 2.316269874572754], [48.85615285877072, 2.297687530517578] ,[48.86277734477193, 2.335270643234253], [48.874337213533956, 2.2954022884368896], [48.88742882058753, 2.3397445678710938]],
-        [[48.862537368047036, 2.3016786575317383], [48.86225504101119, 2.31337308883667]]
-                            ];
-                            
-        for (var k=0; k<cityPoints[route].length; k++) {
-            var obj = new GLatLng(cityPoints[route][k][0], cityPoints[route][k][1]);
-            points.push(obj);
+    function createRoute(cityPoints, dbPoints) {
+        // 3-dim-massiv (route, checkpoint, coord)   
+        for (var k=0; k<dbPoints.length; k=k+2) {
+            var obj = new GLatLng(dbPoints[k], dbPoints[k+1]);
+            cityPoints.push(obj);
         }    
     }
     
@@ -121,18 +128,18 @@
     // "Show me!" button
     function drawRoute() {
       if (driving) stopDrive();
-      var route = changeTour();
       v=0;
       map.clearOverlays();
       document.getElementById("draw").disabled = true;
       document.getElementById("drive").disabled = false;
       // building route
-      var points = [];
-      createRoute(points, route);
-      marker = new GMarker(points[0], {draggable: false});
+      var cityPoints = [];
+      createRoute(cityPoints, massiv);
+      var markerPoint = new GLatLng(massiv[0], massiv[1]);
+      marker = new GMarker(markerPoint, {draggable: false});
       map.addOverlay(marker);
       // load route
-      directions.loadFromWaypoints(points); // Listener catch "load" event here
+      directions.loadFromWaypoints(cityPoints); // Listener catch "load" event here
     }
     
     // "Drive Me!" button
@@ -167,7 +174,6 @@
             close = true;  
         else                                        
             close = false;
-        
 	panoClient.getNearestPanorama(to4ka, function(svData) {
             if (svData.code == 500) {
                 GLog.write("ERROR 500"); // server error
@@ -210,10 +216,8 @@
                 setTimeout("myPano.followLink(" + yaw_pan + ")", 1500); // smooth move forward     
               }
         });
-	  
         map.panTo(to4ka); // set map center on current marker
         marker.setLatLng(to4ka);
-        
 //        setTimeout("move(" + yaw_pan + ", " + v + ")", 3000);
         setTimeout("move()", 3000);
     }
@@ -229,7 +233,21 @@
     
     // change route button
     function changeTour() {
-        var handler = function(){
+              var route = document.getElementById("country").value;
+                $.ajax( { 
+                        url: "http://${serverHost}:${serverPort}/demo/check?route="+route,
+                        dataType: "json",
+                        success: function(data) {
+                            massiv = data;
+                        },
+                        error: function() {   
+                        },
+                        complete: function(){
+                        }
+                 });    
+                 
+    
+/*        var handler = function(){
                 var nomer = document.getElementById("country").value;
 		$('a#charge').unbind();
 		$('a#charge').css('color', '#808080');
@@ -248,8 +266,9 @@
 	        }
 	    });    
 	};
-        var nomer = document.getElementById("country").value;
-        $.ajax( { 
+*/        
+//        var nomer = document.getElementById("country").value;
+/*        $.ajax( { 
 	        url: "http://${serverHost}:${serverPort}/demo/check?nomer="+nomer,
 	        dataType: "json",
 	        success: function(exist) { 
@@ -271,8 +290,8 @@
 	        complete: function(){
 	        }
 	 });    
-        
-        return nomer-1;
+*/        
+       
     } 
     
     // diff between the angles
@@ -333,7 +352,7 @@
     
              <div id="body">
                 <tiles:insertAttribute name="body" />
-            </div>  
+             </div>  
                 <c:if test="${not empty user}">
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
