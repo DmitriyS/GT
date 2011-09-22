@@ -93,7 +93,8 @@ ALTER TABLE public.userroutes OWNER TO postgres;
 
 CREATE TABLE users (
     id_user numeric NOT NULL,
-    name character(30),
+    first_name character(30),
+	last_name character(30),
     regdate date
 );
 
@@ -146,7 +147,7 @@ COPY userroutes (id_user, id_route) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY users (id_user, name, regdate) FROM stdin;
+COPY users (id_user, first_name, last_name, regdate) FROM stdin;
 \.
 
 
