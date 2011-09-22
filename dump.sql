@@ -94,7 +94,7 @@ ALTER TABLE public.userroutes OWNER TO postgres;
 CREATE TABLE users (
     id_user numeric NOT NULL,
     first_name character(30),
-	last_name character(30),
+    last_name character(30),
     regdate date
 );
 
