@@ -216,7 +216,7 @@ public class HelloWorldController {
     
     @RequestMapping("/load")
     public @ResponseBody
-            ArrayList check(@RequestParam(required = false, value = "route") String route,
+            ArrayList load(@RequestParam(required = false, value = "route") String route,
             HttpServletRequest req, HttpServletResponse res) 
             throws IOException {
         Long nomer = Long.parseLong(route);

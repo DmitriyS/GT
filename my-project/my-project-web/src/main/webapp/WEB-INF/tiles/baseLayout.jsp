@@ -64,7 +64,7 @@
               $('a#charge').css('color', '#808080');
               
               $.ajax( { 
-                      url: "http://${serverHost}:${serverPort}/demo/check?route=1",
+                      url: "http://${serverHost}:${serverPort}/demo/load?route=1",
                       dataType: "json",
                       success: function(data) {
                           massiv = data;
@@ -235,7 +235,7 @@
     function changeTour() {
               var route = document.getElementById("country").value;
                 $.ajax( { 
-                        url: "http://${serverHost}:${serverPort}/demo/check?route="+route,
+                        url: "http://${serverHost}:${serverPort}/demo/load?route="+route,
                         dataType: "json",
                         success: function(data) {
                             massiv = data;
