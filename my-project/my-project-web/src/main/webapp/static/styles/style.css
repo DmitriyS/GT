@@ -29,4 +29,18 @@ table#payment-history { width: 100%; border-collapse: collapse; padding: 2px; }
 table#payment-history th { text-align: center; border: 1px solid #c0c0c0; font: bold 14px tahoma; }
 table#payment-history td { text-align: left; border: 1px solid #c0c0c0; font: normal 14px tahoma; }
 
+#layer1 {
+	position: absolute;
+	visibility: hidden;
+	width: 400px;
+	height: 300px;
+	left: 20px;
+	top: 300px;
+	background-color: #ccc;
+	border: 1px solid #000;
+	padding: 10px;
+}
 
+#close {
+	float: right;
+}

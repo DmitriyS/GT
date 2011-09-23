@@ -294,6 +294,35 @@
        
     } 
     
+	function setVisible(obj)
+	{
+		obj = document.getElementById(obj);
+		obj.style.visibility = (obj.style.visibility == 'visible') ? 'hidden' : 'visible';
+	}
+        
+	function doSubmit() {
+		var frm = document.getElementById("frm");
+		var area = document.getElementById("layer1");
+
+		var value = "";
+		for (var i = 0; i < frm.route.length; i++) {
+			if (frm.route[i].checked) {
+				value = frm.route[i].value;
+				break;
+			}
+		}
+
+
+		area.innerHTML = "You've bought a new route: <strong>"
+			+ value +"</strong>";
+
+			area.innerHTML += "<b><b> Closing soon...";
+				
+			setTimeout("setVisible('layer1')", 2000);   
+			
+		return false;
+	}
+
     // diff between the angles
     function getYawDelta(a, b) {
       var d = Math.abs(sanitiseYaw(a) - sanitiseYaw(b));
@@ -359,6 +388,28 @@
 		<p><a href="#" id="charge">Buy! (10rub)</a></p>  
                 </div>
                 </c:if>
+				
+				<div id="layer1">
+                      <span id="close"><a href="javascript:setVisible('layer1')" style="text-decoration: none"><strong>Hide</strong></a></span>
+                   <form action="" onsubmit="return false" id="frm">   
+                      <h1>Choose Route:</h1> 
+                      <p>
+                      <input type="radio" name="route" id="Sights" value="Sights" checked="checked" />
+                        <label for="Sights">Sights</label>
+                      </p><p>  
+                      <input type="radio" name="route" id="Impressionism" value="Impressionism"/>
+                        <label for="Impressionism">Impressionism</label>
+                      </p><p>
+                      <input type="radio" name="route" id="French_Revolution" value="French_Revolution"/>
+                        <label for="French_Revolution">French_Revolution</label>
+                      </p>  
+                      <p style="text-align: right; ">
+                        <input type="submit" value="Submit" onclick="doSubmit()" />
+                        </p>
+                   </form>    
+                </div>
+
+                <a href="#" onclick="setVisible('layer1');return false" target="_self">Buy!</a>
         </div>
 
     </body>
