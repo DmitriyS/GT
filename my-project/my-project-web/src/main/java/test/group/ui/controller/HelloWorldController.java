@@ -204,8 +204,7 @@ public class HelloWorldController {
 
     @RequestMapping("/pay")
     public @ResponseBody
-            TransactionInfo pay(@RequestParam(required = false, value = "nomer") String nomer,
-            HttpServletRequest req, HttpServletResponse res) 
+            TransactionInfo pay(HttpServletRequest req, HttpServletResponse res) 
             throws IOException, TopApiException {
        
         final User user = getCurrentUser(req);
@@ -221,6 +220,39 @@ public class HelloWorldController {
             throws IOException {
         Long nomer = Long.parseLong(route);
         return getXY(nomer);
+    }
+    
+    @RequestMapping("/getRoutesList")
+    public @ResponseBody
+            ArrayList getRoutesList(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, TopApiException {
+//        final User user = getCurrentUser(req);
+//        Long id = user.getId();
+        Long id = 2L;
+        ArrayList data = new ArrayList();
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+           trns = session.beginTransaction();
+           List<Route> routes = session.createQuery("from Route where id not in "
+                   + "(select rid from UserRoutes where uid = :id)")
+           .setLong( "id", id )
+           .list();
+           for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {
+                Route route = iter.next();
+                data.add(route.getDescription());
+           }
+           trns.commit();
+        } catch (RuntimeException e) {
+           if(trns != null){
+            trns.rollback();
+           }
+           e.printStackTrace();
+        } finally{
+           session.flush();
+           session.close();
+           return data;
+        } 
     }
 
     private User getCurrentUser(HttpServletRequest req) {
@@ -243,8 +275,8 @@ public class HelloWorldController {
        .setLong( "id", id )
        .list();
        for (Iterator<RouteValues> iter = rvs.iterator(); iter.hasNext();) {
-        RouteValues rv = iter.next();
-        points.add(rv.getX()); points.add(rv.getY());
+            RouteValues rv = iter.next();
+            points.add(rv.getX()); points.add(rv.getY());
        }
        trns.commit();
       } catch (RuntimeException e) {
@@ -258,9 +290,11 @@ public class HelloWorldController {
        return points;
       } 
     } 
-
     
-    // usage of this func will be defined later. it fills routevalues table
+    /*
+     * usage of this func will be defined later. it fills userroutes table
+     * to call: addRoute(3L, 1L);
+     */
     private void addRoute (Long idUser, Long idRoute) {
         Transaction trns = null;
         Session session = HibernateUtil.getSessionFactory().openSession();

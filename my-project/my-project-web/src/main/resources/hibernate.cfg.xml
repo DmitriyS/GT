@@ -22,6 +22,9 @@
         <property name="hbm2ddl.auto">update</property>
         
         <mapping resource="routevalues.hbm.xml"/>
+        <mapping resource="userroutes.hbm.xml"/>
+        <mapping resource="user.hbm.xml"/>
+        <mapping resource="route.hbm.xml"/>
         
   </session-factory>
 </hibernate-configuration>

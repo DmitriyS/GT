@@ -233,7 +233,8 @@
     
     // change route button
     function changeTour() {
-              var route = document.getElementById("country").value;
+                document.getElementById("draw").disabled = false;
+                var route = document.getElementById("country").value;
                 $.ajax( { 
                         url: "http://${serverHost}:${serverPort}/demo/load?route="+route,
                         dataType: "json",
@@ -294,34 +295,58 @@
        
     } 
     
-	function setVisible(obj)
-	{
-		obj = document.getElementById(obj);
-		obj.style.visibility = (obj.style.visibility == 'visible') ? 'hidden' : 'visible';
-	}
-        
-	function doSubmit() {
-		var frm = document.getElementById("frm");
-		var area = document.getElementById("layer1");
+    function setVisible(obj) {
+        layer = document.getElementById(obj);
+        layer.style.visibility = (layer.style.visibility == 'visible') ? 'hidden' : 'visible';
+// here I get route description (string)
+        $.ajax( { 
+            url: "http://${serverHost}:${serverPort}/demo/getRoutesList",
+            dataType: "json",
+            success: function() {
+            },
+            error: function() {   
+            },
+            complete: function(){
+            }
+        });
 
-		var value = "";
-		for (var i = 0; i < frm.route.length; i++) {
-			if (frm.route[i].checked) {
-				value = frm.route[i].value;
-				break;
-			}
-		}
+        if (layer.style.visibility == 'visible') {
+            layer.innerHTML = "Wait please...";
+            setTimeout("fillContent(layer, massiv)", 1000);
+        }	
 
+        else layer.innerHTML = "";
 
-		area.innerHTML = "You've bought a new route: <strong>"
-			+ value +"</strong>";
+    }
 
-			area.innerHTML += "<b><b> Closing soon...";
-				
-			setTimeout("setVisible('layer1')", 2000);   
-			
-		return false;
-	}
+    // later variable i replace with a route description
+    function fillContent(obj) {
+        obj.innerHTML = "<span id=close><a href=javascript:setVisible('layer1') style=text-decoration: none><strong>Hide</strong></a></span>";
+        obj.innerHTML += "<h1>Choose Route:</h1>";
+        for (var i=0; i<4; i++)
+            obj.innerHTML += "<p><input type=radio name=route id=" + i + " value=" + i + "><label for=" + i + ">" + i + "</label></p>";
+        obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
+    }
+
+    function doSubmit() {
+        var routes = document.getElementsByName("route");
+        var area = document.getElementById("layer1");
+
+        var chosen = "";
+        for (var i = 0; i < routes.length; i++) {
+            if (routes[i].checked) {
+                chosen = routes[i].value;
+                break;
+            }
+        }
+
+        area.innerHTML = "You've bought a new route: <strong>"
+            + chosen + "</strong>";
+        area.innerHTML += "<br><br> Closing soon...";
+        setTimeout("setVisible('layer1')", 2000);   
+
+        return false;
+    }
 
     // diff between the angles
     function getYawDelta(a, b) {
@@ -389,24 +414,7 @@
                 </div>
                 </c:if>
 				
-				<div id="layer1">
-                      <span id="close"><a href="javascript:setVisible('layer1')" style="text-decoration: none"><strong>Hide</strong></a></span>
-                   <form action="" onsubmit="return false" id="frm">   
-                      <h1>Choose Route:</h1> 
-                      <p>
-                      <input type="radio" name="route" id="Sights" value="Sights" checked="checked" />
-                        <label for="Sights">Sights</label>
-                      </p><p>  
-                      <input type="radio" name="route" id="Impressionism" value="Impressionism"/>
-                        <label for="Impressionism">Impressionism</label>
-                      </p><p>
-                      <input type="radio" name="route" id="French_Revolution" value="French_Revolution"/>
-                        <label for="French_Revolution">French_Revolution</label>
-                      </p>  
-                      <p style="text-align: right; ">
-                        <input type="submit" value="Submit" onclick="doSubmit()" />
-                        </p>
-                   </form>    
+		<div id="layer1">
                 </div>
 
                 <a href="#" onclick="setVisible('layer1');return false" target="_self">Buy!</a>
