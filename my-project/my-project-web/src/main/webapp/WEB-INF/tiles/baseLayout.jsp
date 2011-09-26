@@ -312,7 +312,7 @@
 
         if (layer.style.visibility == 'visible') {
             layer.innerHTML = "Wait please...";
-            setTimeout("fillContent(layer, massiv)", 1000);
+            setTimeout("fillContent(layer)", 1000);
         }	
 
         else layer.innerHTML = "";
