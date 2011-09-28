@@ -203,8 +203,7 @@ public class HelloWorldController {
                     list();
             for (Iterator<User> iter = u.iterator(); iter.hasNext();) {
                 User compare = iter.next();
-                if (compare.getId() == id){
-                    trns.commit();
+                if (compare.getId().equals(id)){
                     return;
                 }
             }    
@@ -236,17 +235,18 @@ public class HelloWorldController {
     }
 
     @RequestMapping("/pay")
-    public @ResponseBody
-            TransactionInfo pay(@RequestParam(required = false, value = "id") String routeId,
+    public @ResponseBody 
+            //TransactionInfo
+       void      pay(@RequestParam(required = false, value = "id") String routeId,
             HttpServletRequest req, HttpServletResponse res) 
             throws IOException, TopApiException {
         final User user = getCurrentUser(req);
         Long id = user.getId();
         Long route = Long.parseLong(routeId);
         addRoute(id, route);
-	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
-		"Description", "Refcode");
-        return transactionInfo;
+//	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
+//		"Description", "Refcode");
+        return; //transactionInfo;
     }
     
     private void addRoute (Long idUser, Long idRoute) {
@@ -351,7 +351,7 @@ public class HelloWorldController {
         try {
            trns = session.beginTransaction();
            List<Route> routes = session.createQuery("from Route where id not in "
-                   + "(select rid from UserRoutes where uid = :id)")
+                   + "(select rid from UserRoutes where uid = :id) and id > 2")
            .setLong( "id", id )
            .list();
            for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {

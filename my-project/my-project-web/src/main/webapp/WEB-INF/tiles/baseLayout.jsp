@@ -37,8 +37,6 @@
     var v;
     var driving = false;
     var yaw_pan;
-    var massiv;
-    var routeDesc;
 
     // init()
     function initialize() {
@@ -62,18 +60,6 @@
                 handle();
               });
               
-              $.ajax( { 
-                      url: "http://${serverHost}:${serverPort}/demo/loadPoints?route=1",
-                      dataType: "json",
-                      success: function(data) {
-                          massiv = data;
-                      },
-                      error: function() {   
-                      },
-                      complete: function(){
-                      }
-              });
-/*              
               if (test=${not empty user})
                 $.ajax( { 
                       url: "http://${serverHost}:${serverPort}/demo/getRoutes",
@@ -87,7 +73,7 @@
                       complete: function(){
                       }
                 });  
-*/              
+              
           }
     }
     
@@ -146,8 +132,10 @@
       document.getElementById("drive").disabled = false;
       // building route
       var cityPoints = [];
-      createRoute(cityPoints, massiv);
-      var markerPoint = new GLatLng(massiv[0], massiv[1]);
+      var dbPoints = [];
+      dbPoints = changeTour();
+      createRoute(cityPoints, dbPoints);
+      var markerPoint = new GLatLng(dbPoints[0], dbPoints[1]);
       marker = new GMarker(markerPoint, {draggable: false});
       map.addOverlay(marker);
       // load route
@@ -245,71 +233,28 @@
     
     // change route button
     function changeTour() {
-                document.getElementById("draw").disabled = false;
-                var route = document.getElementById("country").value;
-    //            dbPoints = [];
-                $.ajax( { 
-                        url: "http://${serverHost}:${serverPort}/demo/loadPoints?route="+route,
-                        dataType: "json",
-                        success: function(data) {
-                            massiv = data;
-                        },
-                        error: function() {   
-                        },
-                        complete: function(){
-                        }
-                 });    
-    
-/*        var handler = function(){
-                var nomer = document.getElementById("country").value;
-		$('a#charge').unbind();
-		$('a#charge').css('color', '#808080');
-		$('#charge-status-msg').empty().text("Please wait...");
-	    $.ajax( { 
-	        url: "http://${serverHost}:${serverPort}/demo/pay?nomer="+nomer,
-	        dataType: "json",
-	        success: function(buy) { 
-	            $('#charge-status-msg').empty().text("You have bought a new route, transactionId is " + buy.transactionId);
-                    document.getElementById("draw").disabled = false;
-	        },
-	        error: function() {                 
-	            $('#charge-status-msg').empty().text("The last payment has failed, please try again later.");
-	        },
-	        complete: function(){
-	        }
-	    });    
-	};
-*/        
-//        var nomer = document.getElementById("country").value;
-/*        $.ajax( { 
-	        url: "http://${serverHost}:${serverPort}/demo/check?nomer="+nomer,
-	        dataType: "json",
-	        success: function(exist) { 
-//	            $('#charge-status-msg').empty().text(exist);
-                    if (exist) {
-	        	$('a#charge').unbind();
-                        $('a#charge').css('color', '#808080');
-                        document.getElementById("draw").disabled = false;
-                    }    
-                    else {
-                        $('a#charge').bind('click', handler);
-	        	$('a#charge').css('color', '#0099FF');
-                        document.getElementById("draw").disabled = true;
-                    }  
-	        },
-	        error: function() {                 
-	            $('#charge-status-msg').empty().text("error");
-	        },
-	        complete: function(){
-	        }
-	 });    
-*/        
-       
+        document.getElementById("draw").disabled = false;
+        var points = [];
+        var route = document.getElementById("country").value;
+        //  dbPoints = [];
+        $.ajax( { 
+            url: "http://${serverHost}:${serverPort}/demo/loadPoints?route="+route,
+            async: false,
+            dataType: "json",
+            success: function(data) {
+                points = data;
+            },
+            error: function() {   
+            },
+            complete: function(){
+            }
+        });      
+        return points;
     } 
     
     function setVisible(obj) {
-//        var route;
-        div = document.getElementById(obj);
+        var route;
+        var div = document.getElementById(obj);
         div.style.visibility = (div.style.visibility == 'visible') ? 'hidden' : 'visible';
 // here I get route description (string)
         if (div.style.visibility == 'visible') {
@@ -320,27 +265,30 @@
                 async: false,
                 dataType: "json",
                 success: function(data) {
-                    routeDesc = data;
+                    route = data;
                 },
                 error: function() {  
                 },
                 complete: function(){
                 }
             });
-        
-            fillContent(div);
+            fillContent(div, route);
         }	
 
         else div.innerHTML = "";
     }
 
     // later variable i replace with a route description
-    function fillContent(obj) {
+    function fillContent(obj, route) {
         obj.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
-        obj.innerHTML += "<h1>Choose Route:</h1>";
-        for (var i=0; i<routeDesc.length; i=i+2)
-            obj.innerHTML += "<p><input type=radio name=route id=" + routeDesc[i+1] + " value=" + routeDesc[i] + "><label for=" + routeDesc[i+1] + ">" + routeDesc[i+1] + "</label></p>";
-        obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
+        if (route[0] == null)
+            obj.innerHTML += "<br><br><h1>You've bought all routes! :D</h1>";
+        else {
+            obj.innerHTML += "<h1>Choose Route:</h1>";
+            for (var i=0; i<route.length; i=i+2)
+                obj.innerHTML += "<p><input type=radio name=route id=" + route[i+1] + " value=" + route[i] + "><label for=" + route[i+1] + ">" + route[i+1] + "</label></p>";
+            obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
+        }
     }
 
     function doSubmit() {
@@ -358,39 +306,32 @@
         }
 
         area.innerHTML = "You've bought a new route: <strong>"
-            + chosenName + "</strong>";
+           + chosenName + "</strong>";
         area.innerHTML += "<br><br> Closing soon..."; 
-        document.getElementById("charge").onclick = "return false";
-        
         $.ajax( { 
-            url: "http://${serverHost}:${serverPort}/demo/pay?id="+chosenId,
-            async: false,
-            dataType: "json",
-            success: function(buy) { 
-                $('#charge-status-msg').empty().text("You have bought a new route, transactionId is " + buy.transactionId);
-            },
-            error: function() {                 
-                $('#charge-status-msg').empty().text("The last payment has failed, please try again later.");
-            },
-            complete: function(){
-            }
-	});    
-        
-        // adding route in select list
-        if (buy != null) 
-            addRoute(chosenId, chosenName);
-        
+                    url: "http://${serverHost}:${serverPort}/demo/pay?id="+chosenId,
+                    async: false,
+                    dataType: "json",
+                    success: function() { 
+                        //                        $('#charge-status-msg').empty().text("You have bought a new route, transactionId is " + buy.transactionId);
+                        addRoute(chosenId, chosenName);
+                    },
+                    error: function() {                 
+                        $('#charge-status-msg').empty().text("The last payment has failed, please try again later.");
+                    },
+                    complete: function(){
+                    }
+                });
         setVisible('pay');
-        document.getElementById("charge").onclick = "setVisible('pay');return false";
         return false;
     }
     
     function addRoute(id, name) {
-		var countries = document.getElementById('country');
-		var option = document.createElement('option');
-		option.text = name;
-		option.value = id;
-		countries.add(option);
+        var countries = document.getElementById('country');
+        var option = document.createElement('option');
+        option.text = name;
+        option.value = id;
+        countries.add(option);
     }
 
     // diff between the angles
@@ -440,6 +381,7 @@
                 
                 <b>Choose Tour:</b><br>
                 <select id="country" onchange="changeTour()">
+                    <option value="0" disabled>Choose Tour:</option>
                     <option value="1">Sights</option>                
                     <option value="2">Impressionism</option>
                     <!--option value="3">French_Revolution</option>
@@ -459,13 +401,7 @@
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
                 </div>
-                <!--a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a-->
                 </c:if>
-				
-		<!--div id="layer1">
-                </div>
-
-                <a href="#" onclick="setVisible('layer1');return false" target="_self">Buy!</a-->
         </div>
 
     </body>
