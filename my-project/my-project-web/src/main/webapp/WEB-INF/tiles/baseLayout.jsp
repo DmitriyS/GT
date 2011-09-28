@@ -312,6 +312,7 @@
         div = document.getElementById(obj);
         div.style.visibility = (div.style.visibility == 'visible') ? 'hidden' : 'visible';
 // here I get route description (string)
+<<<<<<< HEAD
         if (div.style.visibility == 'visible') {
             div.innerHTML = "Wait please...";
             
@@ -329,6 +330,22 @@
             });
         
             fillContent(div);
+=======
+        $.ajax( { 
+            url: "http://${serverHost}:${serverPort}/demo/getRoutesList",
+            dataType: "json",
+            success: function() {
+            },
+            error: function() {   
+            },
+            complete: function(){
+            }
+        });
+
+        if (layer.style.visibility == 'visible') {
+            layer.innerHTML = "Wait please...";
+            setTimeout("fillContent(layer)", 1000);
+>>>>>>> 30a45b7a576e552e90bafdf99a0e262571abeef6
         }	
 
         else div.innerHTML = "";
