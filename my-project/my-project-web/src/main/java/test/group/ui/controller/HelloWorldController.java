@@ -189,8 +189,41 @@ public class HelloWorldController {
                     identityServiceClient.validateAccessToken(accessToken));
 	    final User user = new User(id, accessToken);
 	    req.getSession().setAttribute(SESSION_ATTR_USER, user);
+            storeToDB(id);
 	}
         return new ModelAndView(new RedirectView(MAIN_VIEW));
+    }
+    
+    public void storeToDB(Long id) {
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            trns = session.beginTransaction();
+            List<User> u = session.createQuery("from User").
+                    list();
+            for (Iterator<User> iter = u.iterator(); iter.hasNext();) {
+                User compare = iter.next();
+                if (compare.getId() == id){
+                    trns.commit();
+                    return;
+                }
+            }    
+            User user = new User();
+            user.setId(id); 
+//            user.setFirstName("someName"); - this value will be got from new Id-top-api
+//            user.setLastName("someSurname"); - same as previous
+//            user.setDate(date); - check for date format to fix
+            session.save(user);
+            trns.commit();
+        } catch (RuntimeException e) {
+            if (trns != null) {
+                trns.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            session.flush();
+            session.close();
+        }
     }
 
     @RequestMapping("/logout")
@@ -204,65 +237,47 @@ public class HelloWorldController {
 
     @RequestMapping("/pay")
     public @ResponseBody
-            TransactionInfo pay(HttpServletRequest req, HttpServletResponse res) 
+            TransactionInfo pay(@RequestParam(required = false, value = "id") String routeId,
+            HttpServletRequest req, HttpServletResponse res) 
             throws IOException, TopApiException {
-       
         final User user = getCurrentUser(req);
+        Long id = user.getId();
+        Long route = Long.parseLong(routeId);
+        addRoute(id, route);
 	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
 		"Description", "Refcode");
         return transactionInfo;
     }
     
-    @RequestMapping("/load")
+    private void addRoute (Long idUser, Long idRoute) {
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+           trns = session.beginTransaction();
+           
+           User someUser = (User) session.load(User.class, idUser);
+           Route someRoute = (Route) session.load(Route.class, idRoute);
+           someRoute.addToUser(someUser);
+           
+           trns.commit();
+      } catch (RuntimeException e) {
+           if(trns != null){
+            trns.rollback();
+           }
+           e.printStackTrace();
+      } finally{
+           session.flush();
+           session.close();
+      } 
+    }
+    
+    @RequestMapping("/loadPoints")
     public @ResponseBody
             ArrayList load(@RequestParam(required = false, value = "route") String route,
             HttpServletRequest req, HttpServletResponse res) 
             throws IOException {
         Long nomer = Long.parseLong(route);
         return getXY(nomer);
-    }
-    
-    @RequestMapping("/getRoutesList")
-    public @ResponseBody
-            ArrayList getRoutesList(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, TopApiException {
-//        final User user = getCurrentUser(req);
-//        Long id = user.getId();
-        Long id = 2L;
-        ArrayList data = new ArrayList();
-        Transaction trns = null;
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        try {
-           trns = session.beginTransaction();
-           List<Route> routes = session.createQuery("from Route where id not in "
-                   + "(select rid from UserRoutes where uid = :id)")
-           .setLong( "id", id )
-           .list();
-           for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {
-                Route route = iter.next();
-                data.add(route.getDescription());
-           }
-           trns.commit();
-        } catch (RuntimeException e) {
-           if(trns != null){
-            trns.rollback();
-           }
-           e.printStackTrace();
-        } finally{
-           session.flush();
-           session.close();
-           return data;
-        } 
-    }
-
-    private User getCurrentUser(HttpServletRequest req) {
-	final Object userObj = req.getSession().getAttribute(SESSION_ATTR_USER);
-
-	if (!(userObj instanceof User)) {
-	    return null;
-	} else {
-	    return (User) userObj;
-	}
     }
     
     private ArrayList getXY(Long id) {
@@ -289,32 +304,82 @@ public class HelloWorldController {
        session.close();
        return points;
       } 
-    } 
+    }
     
-    /*
-     * usage of this func will be defined later. it fills userroutes table
-     * to call: addRoute(3L, 1L);
-     */
-    private void addRoute (Long idUser, Long idRoute) {
+    @RequestMapping("/getRoutes")
+    public @ResponseBody
+            ArrayList getRoutes(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, TopApiException {
+        final User user = getCurrentUser(req);
+        Long id = user.getId();
+        ArrayList data = new ArrayList();
         Transaction trns = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
            trns = session.beginTransaction();
-           
-           User someUser = (User) session.load(User.class, idUser);
-           Route someRoute = (Route) session.load(Route.class, idRoute);
-           someRoute.addToUser(someUser);
-           
+           List<Route> routes = session.createQuery("from Route where id in "
+                   + "(select rid from UserRoutes where uid = :id)")
+           .setLong( "id", id )
+           .list();
+           for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {
+                Route route = iter.next();
+                data.add(route.getId());
+                data.add(route.getDescription());
+           }
            trns.commit();
-      } catch (RuntimeException e) {
+        } catch (RuntimeException e) {
            if(trns != null){
             trns.rollback();
            }
            e.printStackTrace();
-      } finally{
+        } finally{
            session.flush();
            session.close();
-      } 
+           return data;
+        } 
+    }
+    
+    @RequestMapping("/getRoutesToBuy")
+    public @ResponseBody
+            ArrayList getRoutesToBuy(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, TopApiException {
+        final User user = getCurrentUser(req);
+        Long id = user.getId();
+        ArrayList data = new ArrayList();
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+           trns = session.beginTransaction();
+           List<Route> routes = session.createQuery("from Route where id not in "
+                   + "(select rid from UserRoutes where uid = :id)")
+           .setLong( "id", id )
+           .list();
+           for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {
+                Route route = iter.next();
+                data.add(route.getId());
+                data.add(route.getDescription());
+           }
+           trns.commit();
+        } catch (RuntimeException e) {
+           if(trns != null){
+            trns.rollback();
+           }
+           e.printStackTrace();
+        } finally{
+           session.flush();
+           session.close();
+           return data;
+        } 
+    }
+
+    private User getCurrentUser(HttpServletRequest req) {
+	final Object userObj = req.getSession().getAttribute(SESSION_ATTR_USER);
+
+	if (!(userObj instanceof User)) {
+	    return null;
+	} else {
+	    return (User) userObj;
+	}
     }
     
     @ExceptionHandler(TopApiException.class)

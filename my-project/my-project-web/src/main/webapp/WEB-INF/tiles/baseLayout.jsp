@@ -38,6 +38,7 @@
     var driving = false;
     var yaw_pan;
     var massiv;
+    var routeDesc;
 
     // init()
     function initialize() {
@@ -60,11 +61,9 @@
               GEvent.addListener(directions, "load", function() {
                 handle();
               });
-              $('a#charge').unbind();
-              $('a#charge').css('color', '#808080');
               
               $.ajax( { 
-                      url: "http://${serverHost}:${serverPort}/demo/load?route=1",
+                      url: "http://${serverHost}:${serverPort}/demo/loadPoints?route=1",
                       dataType: "json",
                       success: function(data) {
                           massiv = data;
@@ -74,12 +73,25 @@
                       complete: function(){
                       }
               });
-              
+/*              
+              if (test=${not empty user})
+                $.ajax( { 
+                      url: "http://${serverHost}:${serverPort}/demo/getRoutes",
+                      dataType: "json",
+                      success: function(data) {
+                         for (var i=0; i<data.length; i=i+2) 
+                            if (data[i]>2) addRoute(data[i], data[i+1])
+                      },
+                      error: function() {   
+                      },
+                      complete: function(){
+                      }
+                });  
+*/              
           }
     }
     
-    function createRoute(cityPoints, dbPoints) {
-        // 3-dim-massiv (route, checkpoint, coord)   
+    function createRoute(cityPoints, dbPoints) {   
         for (var k=0; k<dbPoints.length; k=k+2) {
             var obj = new GLatLng(dbPoints[k], dbPoints[k+1]);
             cityPoints.push(obj);
@@ -235,8 +247,9 @@
     function changeTour() {
                 document.getElementById("draw").disabled = false;
                 var route = document.getElementById("country").value;
+    //            dbPoints = [];
                 $.ajax( { 
-                        url: "http://${serverHost}:${serverPort}/demo/load?route="+route,
+                        url: "http://${serverHost}:${serverPort}/demo/loadPoints?route="+route,
                         dataType: "json",
                         success: function(data) {
                             massiv = data;
@@ -246,7 +259,6 @@
                         complete: function(){
                         }
                  });    
-                 
     
 /*        var handler = function(){
                 var nomer = document.getElementById("country").value;
@@ -296,56 +308,89 @@
     } 
     
     function setVisible(obj) {
-        layer = document.getElementById(obj);
-        layer.style.visibility = (layer.style.visibility == 'visible') ? 'hidden' : 'visible';
+//        var route;
+        div = document.getElementById(obj);
+        div.style.visibility = (div.style.visibility == 'visible') ? 'hidden' : 'visible';
 // here I get route description (string)
-        $.ajax( { 
-            url: "http://${serverHost}:${serverPort}/demo/getRoutesList",
-            dataType: "json",
-            success: function() {
-            },
-            error: function() {   
-            },
-            complete: function(){
-            }
-        });
-
-        if (layer.style.visibility == 'visible') {
-            layer.innerHTML = "Wait please...";
-            setTimeout("fillContent(layer, massiv)", 1000);
+        if (div.style.visibility == 'visible') {
+            div.innerHTML = "Wait please...";
+            
+            $.ajax( { 
+                url: "http://${serverHost}:${serverPort}/demo/getRoutesToBuy",
+                async: false,
+                dataType: "json",
+                success: function(data) {
+                    routeDesc = data;
+                },
+                error: function() {  
+                },
+                complete: function(){
+                }
+            });
+        
+            fillContent(div);
         }	
 
-        else layer.innerHTML = "";
-
+        else div.innerHTML = "";
     }
 
     // later variable i replace with a route description
     function fillContent(obj) {
-        obj.innerHTML = "<span id=close><a href=javascript:setVisible('layer1') style=text-decoration: none><strong>Hide</strong></a></span>";
+        obj.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
         obj.innerHTML += "<h1>Choose Route:</h1>";
-        for (var i=0; i<4; i++)
-            obj.innerHTML += "<p><input type=radio name=route id=" + i + " value=" + i + "><label for=" + i + ">" + i + "</label></p>";
+        for (var i=0; i<routeDesc.length; i=i+2)
+            obj.innerHTML += "<p><input type=radio name=route id=" + routeDesc[i+1] + " value=" + routeDesc[i] + "><label for=" + routeDesc[i+1] + ">" + routeDesc[i+1] + "</label></p>";
         obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
     }
 
     function doSubmit() {
         var routes = document.getElementsByName("route");
-        var area = document.getElementById("layer1");
+        var area = document.getElementById("pay");
 
-        var chosen = "";
+        var chosenId = 0;
+        var chosenName = "";
         for (var i = 0; i < routes.length; i++) {
             if (routes[i].checked) {
-                chosen = routes[i].value;
+                chosenId = routes[i].value;
+                chosenName = routes[i].id;
                 break;
             }
         }
 
         area.innerHTML = "You've bought a new route: <strong>"
-            + chosen + "</strong>";
-        area.innerHTML += "<br><br> Closing soon...";
-        setTimeout("setVisible('layer1')", 2000);   
-
+            + chosenName + "</strong>";
+        area.innerHTML += "<br><br> Closing soon..."; 
+        document.getElementById("charge").onclick = "return false";
+        
+        $.ajax( { 
+            url: "http://${serverHost}:${serverPort}/demo/pay?id="+chosenId,
+            async: false,
+            dataType: "json",
+            success: function(buy) { 
+                $('#charge-status-msg').empty().text("You have bought a new route, transactionId is " + buy.transactionId);
+            },
+            error: function() {                 
+                $('#charge-status-msg').empty().text("The last payment has failed, please try again later.");
+            },
+            complete: function(){
+            }
+	});    
+        
+        // adding route in select list
+        if (buy != null) 
+            addRoute(chosenId, chosenName);
+        
+        setVisible('pay');
+        document.getElementById("charge").onclick = "setVisible('pay');return false";
         return false;
+    }
+    
+    function addRoute(id, name) {
+		var countries = document.getElementById('country');
+		var option = document.createElement('option');
+		option.text = name;
+		option.value = id;
+		countries.add(option);
     }
 
     // diff between the angles
@@ -397,12 +442,15 @@
                 <select id="country" onchange="changeTour()">
                     <option value="1">Sights</option>                
                     <option value="2">Impressionism</option>
-                    <option value="3">French_Revolution</option>
-                    <option value="4">test</option>   
+                    <!--option value="3">French_Revolution</option>
+                    <option value="4">test</option-->   
                 </select>
                 
                 <input type="button" value="Show Me!" id="draw"  onclick="drawRoute()" />
                 <input type="button" value="Drive Me!" id="drive"  onclick="moveRoute()" disabled/> 
+                <c:if test="${not empty user}">
+                <a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a>
+                </c:if>
     
              <div id="body">
                 <tiles:insertAttribute name="body" />
@@ -410,14 +458,14 @@
                 <c:if test="${not empty user}">
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
-		<p><a href="#" id="charge">Buy! (10rub)</a></p>  
                 </div>
+                <!--a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a-->
                 </c:if>
 				
-		<div id="layer1">
+		<!--div id="layer1">
                 </div>
 
-                <a href="#" onclick="setVisible('layer1');return false" target="_self">Buy!</a>
+                <a href="#" onclick="setVisible('layer1');return false" target="_self">Buy!</a-->
         </div>
 
     </body>

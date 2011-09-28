@@ -3,7 +3,6 @@
 <hibernate-mapping>
   <class name="test.group.ui.bean.User" table="USERS">
     <id column="ID_USER" name="id" type="long">
-      <generator class="native"/>
     </id>
     <property name="firstName">
       <column name="FIRST_NAME"/>

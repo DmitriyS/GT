@@ -3,7 +3,6 @@
 <hibernate-mapping>
   <class name="test.group.ui.bean.Route" table="ROUTES">
     <id column="ID_ROUTE" name="id" type="long">
-      <generator class="native"/>
     </id>
     
     <property name="description">
