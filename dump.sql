@@ -107,7 +107,7 @@ ALTER TABLE public.users OWNER TO postgres;
 
 COPY routes (id_route, description) FROM stdin;
 1	Sights                        
-2	Impression                    
+2	Impressionism                    
 3	French_Revolution             
 \.
 
