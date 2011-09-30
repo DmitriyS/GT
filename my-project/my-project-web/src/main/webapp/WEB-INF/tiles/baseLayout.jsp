@@ -282,7 +282,7 @@
     function fillContent(obj, route) {
         obj.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
         if (route[0] == null)
-            obj.innerHTML += "<br><br><h1>You've bought all routes! :D</h1>";
+            obj.innerHTML += "<br><br><h1>You've bought all routes</h1>";
         else {
             obj.innerHTML += "<h1>Choose Route:</h1>";
             for (var i=0; i<route.length; i=i+2)
@@ -312,8 +312,8 @@
                     url: "http://${serverHost}:${serverPort}/demo/pay?id="+chosenId,
                     async: false,
                     dataType: "json",
-                    success: function() { 
-                        //                        $('#charge-status-msg').empty().text("You have bought a new route, transactionId is " + buy.transactionId);
+                    success: function(buy) { 
+//                        GLog.write(buy.transactionId);
                         addRoute(chosenId, chosenName);
                     },
                     error: function() {                 
@@ -384,8 +384,6 @@
                     <option value="0" disabled>Choose Tour:</option>
                     <option value="1">Sights</option>                
                     <option value="2">Impressionism</option>
-                    <!--option value="3">French_Revolution</option>
-                    <option value="4">test</option-->   
                 </select>
                 
                 <input type="button" value="Show Me!" id="draw"  onclick="drawRoute()" />

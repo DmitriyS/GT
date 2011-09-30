@@ -60,12 +60,20 @@ public class HelloWorldController {
     /**
      * API key provided by platform 
      */
-    private static final String API_KEY = "ca30f3c5b1f52665ce909434e2ffae31";
+    private static final String API_KEY = 
+            // sandbox
+            "ca30f3c5b1f52665ce909434e2ffae31";
+            // commercial
+         //   "6bcbb5c7bbcde0df1c5f8683d157a3f3";
     
     /**
      * API secret provided by platform
      */
-    private static final String API_SECRET = "2370936af24a64fd";
+    private static final String API_SECRET = 
+            // sandbox
+            "2370936af24a64fd";
+            // commercial
+         //   "7f79f6e5118f7f8f";
     
     /**
      * The login page URL provided by platform
@@ -236,17 +244,16 @@ public class HelloWorldController {
 
     @RequestMapping("/pay")
     public @ResponseBody 
-            //TransactionInfo
-       void      pay(@RequestParam(required = false, value = "id") String routeId,
+            TransactionInfo pay(@RequestParam(required = false, value = "id") String routeId,
             HttpServletRequest req, HttpServletResponse res) 
             throws IOException, TopApiException {
         final User user = getCurrentUser(req);
         Long id = user.getId();
         Long route = Long.parseLong(routeId);
         addRoute(id, route);
-//	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
-//		"Description", "Refcode");
-        return; //transactionInfo;
+	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
+		"Description", "Refcode");
+        return transactionInfo;
     }
     
     private void addRoute (Long idUser, Long idRoute) {
