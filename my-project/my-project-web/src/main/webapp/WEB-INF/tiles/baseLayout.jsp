@@ -25,7 +25,7 @@
                 
         <script type="text/javascript" src="../static/js/jquery-1.6.2.min.js"></script> 
         
-        <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;&v=2&key=ABQIAAAAjU0EJWnWPMv7oQ-jjS7dYxSPW5CJgpdgO_s4yyMovOaVh_KvvhSfpvagV18eOyDWu7VytS6Bi1CWxw"></script> 
+        <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;&v=2&key=ABQIAAAA-gBHcbc-hWjWattlNwHI0BQ_gclvnbRHKqy5YZC2Jgi6EamBthSVWmQmT_kLW2NT6QuLuwHb0dBvDA"></script> 
         <script type="text/javascript"> 
     
     // vars
