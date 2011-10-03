@@ -17,7 +17,7 @@ package test.group.ui.bean;
 import java.io.Serializable;
 import java.util.List;
 
-import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
+//import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
 
 /**
  * @author EDemyanchik
@@ -27,7 +27,7 @@ import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Trans
 public class UserProfile implements Serializable {
 	/**
 	 * Serial version identifier
-	 */
+	 
 	private static final long serialVersionUID = 1L;
 	
 	private String balance;
@@ -45,5 +45,5 @@ public class UserProfile implements Serializable {
 	public void setTransactionHistory(List<Transactions> transactionHistory) {
 		this.transactionHistory = transactionHistory;
 	}
-	
+	*/
 }

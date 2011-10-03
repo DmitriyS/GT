@@ -31,15 +31,15 @@ import com.yota.top.sdk.PaymentServiceClient;
 import com.yota.top.sdk.TopApiException;
 import com.yota.top.sdk.impl.IdentityServiceClientImpl;
 import com.yota.top.sdk.impl.PaymentServiceClientImpl;
-import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
+//import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
 import com.yota.top.sdk.model.payment.TransactionInfo;
 import test.group.ui.bean.*;
-import test.group.utils.TransactionRecordComparator;
+//import test.group.utils.TransactionRecordComparator;
 
 import java.util.*;
 
 import java.io.IOException;
-import java.util.Collections;
+//import java.util.Collections;
 
 import test.group.dbi.*;
 
@@ -163,7 +163,9 @@ public class HelloWorldController {
     
     @RequestMapping("/profile")
     public ModelAndView balance(HttpServletRequest req) {
-	try {
+        
+        return new ModelAndView(new RedirectView(MAIN_VIEW));
+/*	try {
 	    final User currentUser = getCurrentUser(req);
 
 	    if (currentUser == null) {
@@ -180,7 +182,7 @@ public class HelloWorldController {
 	    return new ModelAndView(PROFILE_VIEW, "profile", userProfile);
 	} catch (TopApiException ex) {
 	    return new ModelAndView(PROFILE_VIEW, "errorMsg", ex.getMessage());
-	}
+	}*/
     }
     
     @RequestMapping("/login")
