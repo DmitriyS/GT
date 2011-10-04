@@ -289,6 +289,17 @@
             <version>1.1-rc1</version>
         </dependency>
         <dependency>
+            <artifactId>jersey-client</artifactId>
+            <groupId>com.sun.jersey</groupId>
+            <type>jar</type>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
             <groupId>javaee</groupId>
             <artifactId>javaee-api</artifactId>
             <version>5</version>
