@@ -12,9 +12,9 @@
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property-->
                          <!-- This options are for MySQL DB -->
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/test</property>
-        <property name="hibernate.connection.username">mysql</property>
-        <property name="hibernate.connection.password"></property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/dsavin</property>
+        <property name="hibernate.connection.username">dsavin</property>
+        <property name="hibernate.connection.password">wbzO1lrY</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
                                 <!-- Another options -->
         <property name="connection.pool_size">1</property>

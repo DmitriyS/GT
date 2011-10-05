@@ -6,15 +6,15 @@
 <hibernate-mapping>
  <class name="test.group.dbi.RouteValues" table="ROUTEVALUES" >
   <composite-id>
-         <key-property name="id" type="long" column="ID_ROUTE"/>
-         <key-property name="pos" type="long" column="POS"/>
+         <key-property name="id" type="long" column="id_route"/>
+         <key-property name="pos" type="long" column="pos"/>
   </composite-id>
   
   <property name="x">
-   <column name="X" />
+   <column name="x" />
   </property>
   <property name="y">
-   <column name="Y"/>
+   <column name="y"/>
   </property>
  </class>
 </hibernate-mapping>

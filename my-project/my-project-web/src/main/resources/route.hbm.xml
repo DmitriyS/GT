@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-  <class name="test.group.ui.bean.Route" table="ROUTES">
-    <id column="ID_ROUTE" name="id" type="long">
+  <class name="test.group.ui.bean.Route" table="routes">
+    <id column="id_route" name="id" type="long">
     </id>
     
     <property name="description">
-      <column name="DESCRIPTION"/>
+      <column name="description"/>
     </property>
     
-    <set name="users" table="USERROUTES">
-      <key column="ID_ROUTE"/>
-      <many-to-many class="test.group.ui.bean.User" column="ID_USER"/>
+    <set name="users" table="userroutes">
+      <key column="id_route"/>
+      <many-to-many class="test.group.ui.bean.User" column="id_user"/>
     </set>
   </class>
 </hibernate-mapping>
