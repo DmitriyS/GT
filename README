@@ -19,13 +19,14 @@
 		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	File named "dump.sql" is for Data Base restoring.
-	If you use PostgreSQL, do the following steps:
+	File named "dump.sql" is for Data Base Tables restoring.
+	If you use either PostgreSQL or MySQL, do the following steps:
 		- open command prompt
 		- go to "bin" directory of PostgreSQL folder
 		- restore Data Base
-			psql [dbname] < dump.sql
-			
+			psql [dbname] < dump_psql.sql
+			or
+			mysql [dbname] < dump_mysql.sql
 	Due to this command you build 4 tables: users, routes, userroutes and routevalues. 
 		- "users" and "userroutes" are empty
 		- "routes" and "routevalues" keep information about existing routes
