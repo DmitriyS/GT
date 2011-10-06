@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS `routes`;
 CREATE TABLE `routes` (
   `id_route` numeric NOT NULL,
   `description` char(30) DEFAULT NULL,
+  `cost` double DEFAULT NULL,
   primary key (id_route)
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -35,8 +36,9 @@ CREATE TABLE `routes` (
 
 LOCK TABLES `routes` WRITE;
 /*!40000 ALTER TABLE `routes` DISABLE KEYS */;
-INSERT INTO `routes` VALUES ('1','Sights'),('2','Impressionism'),('3','French_Revolution');
+INSERT INTO `routes` VALUES ('1','Sights', '0,0'),('2','Impressionism', '0,0'),('3','French_Revolution', '5,0');
 /*!40000 ALTER TABLE `routes` ENABLE KEYS */;
+UNLOCK TABLES; TABLE `routes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
