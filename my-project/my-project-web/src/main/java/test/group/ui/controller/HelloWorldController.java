@@ -59,13 +59,11 @@ import org.hibernate.Transaction;
 @RequestMapping("/")
 public class HelloWorldController {
     
-    static String fName = "cfgFile.properties";
+    static String fName = "src/main/resources/cfgFile.properties";
     public static Properties properties = readProps();
     
     private static final String API_KEY = properties.getProperty("apiKey", "ca30f3c5b1f52665ce909434e2ffae31");
     private static final String API_SECRET = properties.getProperty("apiSecret", "2370936af24a64fd");
-//    private static String API_KEY = properties.getProperty("apiKey");
-//    private static String API_SECRET = properties.getProperty("apiSecret");
     
     private static final String IDENTITY_PAGE_LOCATION = "https://api.yotatop.ru";
     private static final String PAYMENT_URL = "https://api.yotatop.ru";
