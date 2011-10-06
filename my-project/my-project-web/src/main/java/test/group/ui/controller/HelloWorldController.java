@@ -34,6 +34,7 @@ import com.yota.top.sdk.impl.IdentityServiceClientImpl;
 import com.yota.top.sdk.impl.PaymentServiceClientImpl;
 import com.yota.top.sdk.model.payment.TransactionRecord;
 import com.yota.top.sdk.model.payment.TransactionInfo;
+import java.io.FileInputStream;
 import test.group.ui.bean.*;
 import test.group.utils.TransactionRecordComparator;
 
@@ -57,89 +58,32 @@ import org.hibernate.Transaction;
 @Controller
 @RequestMapping("/")
 public class HelloWorldController {
-
-    /**
-     * API key provided by platform 
-     */
-    private static final String API_KEY = 
-            // sandbox
-            "ca30f3c5b1f52665ce909434e2ffae31";
-            // commercial
-         //   "6bcbb5c7bbcde0df1c5f8683d157a3f3";
     
-    /**
-     * API secret provided by platform
-     */
-    private static final String API_SECRET = 
-            // sandbox
-            "2370936af24a64fd";
-            // commercial
-         //   "7f79f6e5118f7f8f";
+    static String fName = "cfgFile.properties";
+    public static Properties properties = readProps();
     
-    /**
-     * The login page URL provided by platform
-     */
+    private static final String API_KEY = properties.getProperty("apiKey", "ca30f3c5b1f52665ce909434e2ffae31");
+    private static final String API_SECRET = properties.getProperty("apiSecret", "2370936af24a64fd");
+//    private static String API_KEY = properties.getProperty("apiKey");
+//    private static String API_SECRET = properties.getProperty("apiSecret");
+    
     private static final String IDENTITY_PAGE_LOCATION = "https://api.yotatop.ru";
-       
-    /**
-     * The platform URL used to call payment API
-     */
     private static final String PAYMENT_URL = "https://api.yotatop.ru";
-    
-    /**
-     * The platform URL used to call identity API
-     */
     private static final String IDENTITY_URL = "https://api.yotatop.ru";
-
-    /**
-     * The name of authorization code parameter
-     */
-    private static final String REQUEST_PARAM_CODE = "code";
     
-    /**
-     * The name of redirect URI request parameter
-     */
+    private static final String REQUEST_PARAM_CODE = "code";
     private static final String REQUEST_PARAM_REDIRECT_URI = "redirect_uri";
 
-    /**
-     * The name of session attribute which defines server host where Hello World application is deployed 
-     */
     private static final String SESSION_ATTR_SERVER_HOST = "serverHost";
-    
-    /**
-     * The name of session attribute which defines server port where Hello World application is deployed 
-     */    
     private static final String SESSION_ATTR_SERVER_PORT = "serverPort";
-       
-    /**
-     * The name of session attribute which defines the login page URL provided by platform
-     */   
     private static final String SESSION_ATTR_IDENTITY_PAGE_LOCATION = "identityLocation";
-    
-    /**
-     * The name of session attribute which defines API key provided by platform
-     */
     private static final String SESSION_ATTR_API_KEY = "apiKey";
-    
-    /**
-     * The name of session attribute which defines current user logged in Hello World application
-     */
     private static final String SESSION_ATTR_USER = "user";
 
-    /**
-     * URN of HelloWorld login handler
-     */
     private static final String LOGIN_PAGE = "/demo/login";
-
-    /**
-     * The name of main view
-     */
     private static final String MAIN_VIEW = "main";
-    
-    /**
-     * The name of profile view
-     */
     private static final String PROFILE_VIEW = "profile";
+    
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
     private static IdentityServiceClient identityServiceClient = 
@@ -425,5 +369,19 @@ public class HelloWorldController {
 	    HttpServletResponse response) {
 	response.setStatus(e.getHttpStatus().getStatusCode());
 	return e.getError();
+    }
+
+
+    private static Properties readProps() {
+        Properties props = new Properties();
+        try {
+            FileInputStream iFile = new FileInputStream(fName);
+            props.load(iFile);
+        } catch (IOException ex) {
+            throw new IOException("[readProp]" + ex.getMessage());
+        }
+        finally {
+            return props;
+        }
     }
 }
