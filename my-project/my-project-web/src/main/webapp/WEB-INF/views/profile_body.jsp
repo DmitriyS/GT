@@ -3,7 +3,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <c:if test="${not empty profile}">
 	<div id="profile">
-		<p>Balance: ${profile.balance} RUB</p>
+                <p>Balance: ${profile.balance} RUB</p>
 		<p>Purchases History:</p>
 		<table id="payment-history" cellspacing=0 cellpadding=0>
 			<tr>
