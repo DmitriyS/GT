@@ -8,6 +8,9 @@
     <property name="description">
       <column name="description"/>
     </property>
+    <property name="cost">
+      <column name="cost"/>
+    </property>
     
     <set name="users" table="userroutes">
       <key column="id_route"/>

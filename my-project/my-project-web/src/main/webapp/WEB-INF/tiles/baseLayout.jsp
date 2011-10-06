@@ -285,8 +285,8 @@
             obj.innerHTML += "<br><br><h1>You've bought all routes</h1>";
         else {
             obj.innerHTML += "<h1>Choose Route:</h1>";
-            for (var i=0; i<route.length; i=i+2)
-                obj.innerHTML += "<p><input type=radio name=route id=" + route[i+1] + " value=" + route[i] + "><label for=" + route[i+1] + ">" + route[i+1] + "</label></p>";
+            for (var i=0; i<route.length; i=i+3)
+                obj.innerHTML += "<p><input type=radio name=route id=" + route[i+1] + " value=" + route[i] + "><label for=" + route[i+1] + ">" + route[i+1] + ",  " + route[i+2] + " Rub" + "</label></p>";
             obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
         }
     }

@@ -252,8 +252,11 @@ public class HelloWorldController {
         Long id = user.getId();
         Long route = Long.parseLong(routeId);
         addRoute(id, route);
-	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), "10.00",
-		"Description", "Refcode");
+        ArrayList array = getDescription(route);
+        String description = array.get(0).toString();
+        String amount = array.get(1).toString();
+	final TransactionInfo transactionInfo = paymentServiceClient.chargeAmount(user.getAccessToken(), amount,
+		description, "Refcode");
         return transactionInfo;
     }
     
@@ -276,6 +279,31 @@ public class HelloWorldController {
       } finally{
            session.flush();
            session.close();
+      } 
+    }
+    
+    private ArrayList getDescription(Long id) {
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        ArrayList desc = new ArrayList();
+        try {
+           trns = session.beginTransaction();
+           
+           List<Route> query = session.createQuery ("from Route as r where r.id = :id")
+                   .setLong("id", id)
+                   .list();
+           trns.commit();
+           desc.add(query.iterator().next().getDescription());
+           desc.add(query.iterator().next().getCost());
+      } catch (RuntimeException e) {
+           if(trns != null){
+            trns.rollback();
+           }
+           e.printStackTrace();
+      } finally{
+           session.flush();
+           session.close();
+           return desc;
       } 
     }
     
@@ -366,6 +394,7 @@ public class HelloWorldController {
                 Route route = iter.next();
                 data.add(route.getId());
                 data.add(route.getDescription());
+                data.add(route.getCost());
            }
            trns.commit();
         } catch (RuntimeException e) {
