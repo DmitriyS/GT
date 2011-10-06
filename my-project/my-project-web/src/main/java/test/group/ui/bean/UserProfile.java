@@ -17,7 +17,7 @@ package test.group.ui.bean;
 import java.io.Serializable;
 import java.util.List;
 
-//import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
+import com.yota.top.sdk.model.payment.TransactionRecord;
 
 /**
  * @author EDemyanchik
@@ -27,11 +27,11 @@ import java.util.List;
 public class UserProfile implements Serializable {
 	/**
 	 * Serial version identifier
-	 
+	 */
 	private static final long serialVersionUID = 1L;
 	
 	private String balance;
-	private List<Transactions> transactionHistory;
+	private List<TransactionRecord> transactionHistory;
 	
 	public String getBalance() {
 		return balance;
@@ -39,11 +39,11 @@ public class UserProfile implements Serializable {
 	public void setBalance(String balance) {
 		this.balance = balance;
 	}
-	public List<Transactions> getTransactionHistory() {
+	public List<TransactionRecord> getTransactionHistory() {
 		return transactionHistory;
 	}
-	public void setTransactionHistory(List<Transactions> transactionHistory) {
+	public void setTransactionHistory(List<TransactionRecord> transactionHistory) {
 		this.transactionHistory = transactionHistory;
 	}
-	*/
+	
 }

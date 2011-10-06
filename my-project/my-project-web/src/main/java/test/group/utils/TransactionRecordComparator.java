@@ -16,22 +16,22 @@ package test.group.utils;
 
 import java.util.Comparator;
 
-//import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
+import com.yota.top.sdk.model.payment.TransactionRecord;
 
 /**
  * {@link TransactionRecordComparator} 
  *
  */
-public class TransactionRecordComparator {
-/*implements Comparator<Transactions> {
+public class TransactionRecordComparator 
+implements Comparator<TransactionRecord> {
 
-	* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 *
+	 */
 	@Override
-	public int compare(Transactions tr1, Transactions tr2) {
+	public int compare(TransactionRecord tr1, TransactionRecord tr2) {
 		return tr1.getCompleteTime().getTime() < tr2.getCompleteTime().getTime() ? -1 :
 			(tr1.getCompleteTime().getTime() > tr2.getCompleteTime().getTime() ? 1 : 0);
 	}
-*/
+
 }

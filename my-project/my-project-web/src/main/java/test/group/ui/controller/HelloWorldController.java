@@ -14,6 +14,7 @@
  **********************************************************************************/
 package test.group.ui.controller;
 
+import java.math.BigDecimal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -31,10 +32,10 @@ import com.yota.top.sdk.PaymentServiceClient;
 import com.yota.top.sdk.TopApiException;
 import com.yota.top.sdk.impl.IdentityServiceClientImpl;
 import com.yota.top.sdk.impl.PaymentServiceClientImpl;
-//import com.yota.top.sdk.model.payment.GetAccountTransactionHistoryResponse.Transactions;
+import com.yota.top.sdk.model.payment.TransactionRecord;
 import com.yota.top.sdk.model.payment.TransactionInfo;
 import test.group.ui.bean.*;
-//import test.group.utils.TransactionRecordComparator;
+import test.group.utils.TransactionRecordComparator;
 
 import java.util.*;
 
@@ -163,9 +164,7 @@ public class HelloWorldController {
     
     @RequestMapping("/profile")
     public ModelAndView balance(HttpServletRequest req) {
-        
-        return new ModelAndView(new RedirectView(MAIN_VIEW));
-/*	try {
+	try {
 	    final User currentUser = getCurrentUser(req);
 
 	    if (currentUser == null) {
@@ -173,16 +172,16 @@ public class HelloWorldController {
 	    }
 
 	    final UserProfile userProfile = new UserProfile();
-	    final Double balance = paymentServiceClient.getBalance(currentUser.getAccessToken());
-	    final List<Transactions> transactionHistory = paymentServiceClient.getTransactionHistory(
+	    final BigDecimal balance = paymentServiceClient.getBalance(currentUser.getAccessToken());
+	    final List<TransactionRecord> transactionHistory = paymentServiceClient.getTransactionHistory(
 		    currentUser.getAccessToken(), null, null);
 	    Collections.sort(transactionHistory, new TransactionRecordComparator());
-	    userProfile.setBalance(Double.toString(balance));
+	    userProfile.setBalance(balance.toString());
 	    userProfile.setTransactionHistory(transactionHistory);
 	    return new ModelAndView(PROFILE_VIEW, "profile", userProfile);
 	} catch (TopApiException ex) {
 	    return new ModelAndView(PROFILE_VIEW, "errorMsg", ex.getMessage());
-	}*/
+	}
     }
     
     @RequestMapping("/login")
