@@ -4,7 +4,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
  
 <hibernate-mapping>
- <class name="test.group.dbi.RouteValues" table="ROUTEVALUES" >
+ <class name="test.group.dbi.RouteValues" table="routevalues" >
   <composite-id>
          <key-property name="id" type="long" column="id_route"/>
          <key-property name="pos" type="long" column="pos"/>
