@@ -55,7 +55,8 @@ SET default_with_oids = false;
 
 CREATE TABLE routes (
     id_route numeric NOT NULL,
-    description character(30)
+    description character(30),
+    cost double precision
 );
 
 
@@ -105,10 +106,10 @@ ALTER TABLE public.users OWNER TO postgres;
 -- Data for Name: routes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY routes (id_route, description) FROM stdin;
-1	Sights                        
-2	Impressionism                    
-3	French_Revolution             
+COPY routes (id_route, description, cost) FROM stdin;
+1	Sights                        	0
+2	Impressionism                 	0
+3	French_Revolution             	5
 \.
 
 
