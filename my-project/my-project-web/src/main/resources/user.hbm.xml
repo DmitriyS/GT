@@ -11,7 +11,7 @@
       <column name="last_name"/>
     </property>
     <property name="email">
-      <column name="e-mail"/>
+      <column name="e_mail"/>
     </property>
     
     <set name="routes" table="userroutes" inverse="true">

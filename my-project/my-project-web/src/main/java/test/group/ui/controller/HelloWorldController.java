@@ -71,6 +71,7 @@ public class HelloWorldController {
     private static final String IDENTITY_PAGE_LOCATION = properties.getProperty("identity_page_location");
     private static final String PAYMENT_URL = properties.getProperty("payment_url");
     private static final String IDENTITY_URL = properties.getProperty("identity_url");
+    private static final String SUBSCRIBER_URL = properties.getProperty("subscriber_url");
     
     private static final String LOGIN_PAGE = properties.getProperty("login_page");
     private static final String MAIN_VIEW = properties.getProperty("main_view");
@@ -87,10 +88,10 @@ public class HelloWorldController {
 
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
-    private static IdentityServiceClient identityServiceClient = 
+    private static final IdentityServiceClient identityServiceClient = 
 	new IdentityServiceClientImpl(IDENTITY_URL, API_KEY, API_SECRET);
-    private static SubscriberInfoServiceClient subscriberInfoServiceClient = 
-	new SubscriberInfoServiceClientImpl(IDENTITY_URL, API_KEY, API_SECRET);
+    private static final SubscriberInfoServiceClient subscriberInfoServiceClient = 
+	new SubscriberInfoServiceClientImpl(SUBSCRIBER_URL, API_KEY, API_SECRET);
 
     @RequestMapping("/main")
     public ModelAndView main(HttpServletRequest req, HttpServletResponse res) {
