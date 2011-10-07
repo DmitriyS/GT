@@ -14,6 +14,7 @@
  **********************************************************************************/
 package test.group.ui.controller;
 
+import com.yota.top.sdk.model.subscriber.SubscriberProfile;
 import java.math.BigDecimal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,9 +30,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.yota.top.sdk.IdentityServiceClient;
 import com.yota.top.sdk.PaymentServiceClient;
+import com.yota.top.sdk.SubscriberInfoServiceClient;
 import com.yota.top.sdk.TopApiException;
 import com.yota.top.sdk.impl.IdentityServiceClientImpl;
 import com.yota.top.sdk.impl.PaymentServiceClientImpl;
+import com.yota.top.sdk.impl.SubscriberInfoServiceClientImpl;
 import com.yota.top.sdk.model.payment.TransactionRecord;
 import com.yota.top.sdk.model.payment.TransactionInfo;
 import java.io.FileInputStream;
@@ -86,6 +89,8 @@ public class HelloWorldController {
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
     private static IdentityServiceClient identityServiceClient = 
 	new IdentityServiceClientImpl(IDENTITY_URL, API_KEY, API_SECRET);
+    private static SubscriberInfoServiceClient subscriberInfoServiceClient = 
+	new SubscriberInfoServiceClientImpl(IDENTITY_URL, API_KEY, API_SECRET);
 
     @RequestMapping("/main")
     public ModelAndView main(HttpServletRequest req, HttpServletResponse res) {
@@ -138,14 +143,19 @@ public class HelloWorldController {
                     identityServiceClient.getAccessToken(redirectUri, code);
 	    final Long id = Long.parseLong(
                     identityServiceClient.validateAccessToken(accessToken));
-	    final User user = new User(id, accessToken);
+            final SubscriberProfile profile = 
+                    subscriberInfoServiceClient.getSubscriberInfo(accessToken);
+            String firstname = profile.getFirstName();
+            String lastname = profile.getLastName();
+	    String email = profile.getEmail();
+            final User user = new User(id, accessToken);
 	    req.getSession().setAttribute(SESSION_ATTR_USER, user);
-            storeToDB(id);
+            storeToDB(id, firstname, lastname, email);
 	}
         return new ModelAndView(new RedirectView(MAIN_VIEW));
     }
     
-    public void storeToDB(Long id) {
+    public void storeToDB(Long id, String name, String surname, String email) {
         Transaction trns = null;
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
@@ -160,9 +170,9 @@ public class HelloWorldController {
             }    
             User user = new User();
             user.setId(id); 
-//            user.setFirstName("someName"); - this value will be got from new Id-top-api
-//            user.setLastName("someSurname"); - same as previous
-//            user.setDate(date); - check for date format to fix
+            user.setFirstName(name);
+            user.setLastName(surname);
+            user.setEmail(email);
             session.save(user);
             trns.commit();
         } catch (RuntimeException e) {

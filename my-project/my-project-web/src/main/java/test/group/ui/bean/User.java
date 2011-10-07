@@ -14,7 +14,6 @@
  **********************************************************************************/
 package test.group.ui.bean;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.io.Serializable;
@@ -34,7 +33,7 @@ public class User implements Serializable {
     private String accessToken;
     private String firstName;
     private String lastName;
-    private Date date;
+    private String email;
     private Set routes = new HashSet();
 
     public User() {
@@ -77,12 +76,12 @@ public class User implements Serializable {
         this.lastName = lastName;
     }
 
-    public Date getDate() {
-        return date;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     protected Set getRoutes() {

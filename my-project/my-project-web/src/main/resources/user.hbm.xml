@@ -10,8 +10,12 @@
     <property name="lastName">
       <column name="last_name"/>
     </property>
+    <property name="email">
+      <column name="e-mail"/>
+    </property>
+    
     <set name="routes" table="userroutes" inverse="true">
-      <key column="ID_USER"/>
+      <key column="id_user"/>
       <many-to-many class="test.group.ui.bean.Route" column="id_route"/>
     </set>
   </class>
