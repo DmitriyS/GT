@@ -38,7 +38,6 @@ LOCK TABLES `routes` WRITE;
 /*!40000 ALTER TABLE `routes` DISABLE KEYS */;
 INSERT INTO `routes` VALUES ('1','Sights', '0,0'),('2','Impressionism', '0,0'),('3','French_Revolution', '5,0');
 /*!40000 ALTER TABLE `routes` ENABLE KEYS */;
-UNLOCK TABLES; TABLE `routes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
