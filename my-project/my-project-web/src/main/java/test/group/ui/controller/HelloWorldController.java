@@ -60,14 +60,18 @@ import org.hibernate.Transaction;
 public class HelloWorldController {
     
     static String fName = "src/main/resources/cfgFile.properties";
-    public static Properties properties = readProps();
+    private static final Properties properties = readProps();
     
     private static final String API_KEY = properties.getProperty("apiKey", "ca30f3c5b1f52665ce909434e2ffae31");
     private static final String API_SECRET = properties.getProperty("apiSecret", "2370936af24a64fd");
     
-    private static final String IDENTITY_PAGE_LOCATION = "https://api.yotatop.ru";
-    private static final String PAYMENT_URL = "https://api.yotatop.ru";
-    private static final String IDENTITY_URL = "https://api.yotatop.ru";
+    private static final String IDENTITY_PAGE_LOCATION = properties.getProperty("identity_page_location");
+    private static final String PAYMENT_URL = properties.getProperty("payment_url");
+    private static final String IDENTITY_URL = properties.getProperty("identity_url");
+    
+    private static final String LOGIN_PAGE = properties.getProperty("login_page");
+    private static final String MAIN_VIEW = properties.getProperty("main_view");
+    private static final String PROFILE_VIEW = properties.getProperty("profile_view");
     
     private static final String REQUEST_PARAM_CODE = "code";
     private static final String REQUEST_PARAM_REDIRECT_URI = "redirect_uri";
@@ -78,10 +82,6 @@ public class HelloWorldController {
     private static final String SESSION_ATTR_API_KEY = "apiKey";
     private static final String SESSION_ATTR_USER = "user";
 
-    private static final String LOGIN_PAGE = "/demo/login";
-    private static final String MAIN_VIEW = "main";
-    private static final String PROFILE_VIEW = "profile";
-    
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
     private static IdentityServiceClient identityServiceClient = 

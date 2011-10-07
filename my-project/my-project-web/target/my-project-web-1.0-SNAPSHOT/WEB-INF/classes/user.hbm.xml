@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class name="test.group.ui.bean.User" table="users">
+    <id column="id_user" name="id" type="long">
+    </id>
+    <property name="firstName">
+      <column name="first_name"/>
+    </property>
+    <property name="lastName">
+      <column name="last_name"/>
+    </property>
+    <set name="routes" table="userroutes" inverse="true">
+      <key column="ID_USER"/>
+      <many-to-many class="test.group.ui.bean.Route" column="id_route"/>
+    </set>
+  </class>
+</hibernate-mapping>

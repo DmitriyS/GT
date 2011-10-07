@@ -1,0 +1,46 @@
+ /*********************************************************************************
+ *
+ * Copyright 2011 - 2011 Yota Lab LLC, Russia
+ * Copyright 2011 - 2011 Seconca Holdings Limited, Cyprus
+ *
+ *  This source code is Yota Lab Confidential Proprietary
+ *  This software is protected by copyright.  All rights and titles are reserved.
+ *  You shall not use, copy, distribute, modify, decompile, disassemble or reverse
+ *  engineer the software. Otherwise this violation would be treated by law and
+ *  would be subject to legal prosecution.  Legal use of the software provides
+ *  receipt of a license from the right holder only.
+ *
+ *
+ **********************************************************************************/
+
+a { color: #0099FF; text-decoration: none; font: normal 16px tahoma; }
+a:hover { text-decoration: underline; }
+
+p { font: normal 14px tahoma; }
+p.info-msg { color: #808080; padding: 3px; }
+
+div#container { position: absolute; left: 50%; margin-left: -400px; width: 800px; min-height: 600px; }
+div#head  { width: 100%; height: 40px; border-bottom: 1px solid #c0c0c0; padding-top: 20px; }
+div#head  a { padding: 0 10px 0 0; }
+
+div#footer { width: 100%; height: 60px; color: #808080; border-top: 1px solid #c0c0c0; font: normal 14px tahoma; padding-top: 10px; margin-top: 10px; }
+
+table#payment-history { width: 100%; border-collapse: collapse; padding: 2px; }
+table#payment-history th { text-align: center; border: 1px solid #c0c0c0; font: bold 14px tahoma; }
+table#payment-history td { text-align: left; border: 1px solid #c0c0c0; font: normal 14px tahoma; }
+
+#pay {
+	position: absolute;
+	visibility: hidden;
+	width: 400px;
+	height: 300px;
+	left: 20px;
+	top: 75px;
+	background-color: #ccc;
+	border: 1px solid #000;
+	padding: 10px;
+}
+
+#close {
+	float: right;
+}
