@@ -96,7 +96,7 @@ CREATE TABLE users (
     id_user numeric NOT NULL,
     first_name character(30),
 	last_name character(30),
-    regdate date
+    e_mail character(30)
 );
 
 
@@ -148,7 +148,7 @@ COPY userroutes (id_user, id_route) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY users (id_user, first_name, last_name, regdate) FROM stdin;
+COPY users (id_user, first_name, last_name, e_mail) FROM stdin;
 \.
 
 

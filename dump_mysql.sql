@@ -101,7 +101,7 @@ CREATE TABLE `users` (
   `id_user` numeric NOT NULL,
   `first_name` char(30) DEFAULT NULL,
   `last_name` char(30) DEFAULT NULL,
-  `regdate` date DEFAULT NULL,
+  `e_mail` char(30) DEFAULT NULL,
   primary key (id_user)
 ) ENGINE=InnoDB DEFAULT CHARSET=cp1251;
 /*!40101 SET character_set_client = @saved_cs_client */;
