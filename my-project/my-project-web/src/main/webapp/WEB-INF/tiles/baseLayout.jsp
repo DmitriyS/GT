@@ -125,6 +125,7 @@
     
     // "Show me!" button
     function drawRoute() {
+      if (document.getElementById('country').value == 0) return;  
       if (driving) stopDrive();
       v=0;
       map.clearOverlays();
@@ -312,8 +313,7 @@
                     url: "http://${serverHost}:${serverPort}/demo/pay?id="+chosenId,
                     async: false,
                     dataType: "json",
-                    success: function(buy) { 
-//                        GLog.write(buy.transactionId);
+                    success: function() { 
                         addRoute(chosenId, chosenName);
                     },
                     error: function() {                 
@@ -395,11 +395,11 @@
              <div id="body">
                 <tiles:insertAttribute name="body" />
              </div>  
-                <c:if test="${not empty user}">
+             <c:if test="${not empty user}">
                 <div id="pay">
-		<p id="charge-status-msg" class="info-msg"></p> 
+                    <p id="charge-status-msg" class="info-msg"></p> 
                 </div>
-                </c:if>
+             </c:if>
         </div>
 
     </body>
