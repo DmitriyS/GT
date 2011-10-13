@@ -14,6 +14,7 @@
  **********************************************************************************/
 package test.group.ui.controller;
 
+import test.group.callback.IdentityResultCallback;
 import com.yota.top.sdk.model.subscriber.SubscriberProfile;
 import java.math.BigDecimal;
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +51,7 @@ import test.group.dbi.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Future;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -62,7 +64,7 @@ import org.hibernate.Transaction;
 @RequestMapping("/")
 public class HelloWorldController {
     
-    static String fName = "src/main/resources/cfgFile.properties";
+    private static final String fName = "src/main/resources/cfgFile.properties";
     private static final Properties properties = readProps();
     
     private static final String API_KEY = properties.getProperty("apiKey", "ca30f3c5b1f52665ce909434e2ffae31");
@@ -136,7 +138,7 @@ public class HelloWorldController {
     public ModelAndView login(@RequestParam(required = false, 
             value = REQUEST_PARAM_CODE) String code,
 	    HttpServletRequest req, HttpServletResponse res) 
-            throws TopApiException {
+            throws TopApiException, InterruptedException {
 	final String redirectUri = 
              (String) req.getSession().getAttribute(REQUEST_PARAM_REDIRECT_URI);	
 	if (code != null && redirectUri != null) {
