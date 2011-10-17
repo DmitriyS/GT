@@ -14,7 +14,6 @@
  **********************************************************************************/
 package test.group.ui.controller;
 
-import test.group.callback.IdentityResultCallback;
 import com.yota.top.sdk.model.subscriber.SubscriberProfile;
 import java.math.BigDecimal;
 import javax.servlet.http.HttpServletRequest;
@@ -45,13 +44,11 @@ import test.group.utils.TransactionRecordComparator;
 import java.util.*;
 
 import java.io.IOException;
-//import java.util.Collections;
 
 import test.group.dbi.*;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Future;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -87,6 +84,7 @@ public class HelloWorldController {
     private static final String SESSION_ATTR_IDENTITY_PAGE_LOCATION = "identityLocation";
     private static final String SESSION_ATTR_API_KEY = "apiKey";
     private static final String SESSION_ATTR_USER = "user";
+    private static final String USER_NAME = "userName";
 
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
@@ -153,6 +151,7 @@ public class HelloWorldController {
 	    String email = profile.getEmail();
             final User user = new User(id, accessToken);
 	    req.getSession().setAttribute(SESSION_ATTR_USER, user);
+            req.getSession().setAttribute(USER_NAME, firstname);
             storeToDB(id, firstname, lastname, email);
 	}
         return new ModelAndView(new RedirectView(MAIN_VIEW));

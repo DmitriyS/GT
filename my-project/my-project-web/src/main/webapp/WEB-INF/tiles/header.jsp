@@ -9,8 +9,8 @@
     <!-- !!! If user logged in: -->
     <c:if test="${not empty user}">    
     	<a href="<%=request.getContextPath()%>/demo/main">Home</a>
-        <a href="<%=request.getContextPath()%>/demo/profile">My profile</a>
-        <a href="<%=request.getContextPath()%>/demo/logout">Logout</a>        
+        <a href="<%=request.getContextPath()%>/demo/profile">${userName} profile</a>
+        <a href="<%=request.getContextPath()%>/demo/logout">Logout</a>
     </c:if>    
 
 </div>

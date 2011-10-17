@@ -33,7 +33,7 @@ table#payment-history td { text-align: left; border: 1px solid #c0c0c0; font: no
 	position: absolute;
 	visibility: hidden;
 	width: 400px;
-	height: 300px;
+	height: 270px;
 	left: 20px;
 	top: 75px;
 	background-color: #ccc;

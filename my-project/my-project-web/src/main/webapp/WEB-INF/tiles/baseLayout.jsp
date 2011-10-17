@@ -125,12 +125,18 @@
         }    
     }
 
-	   function setVisible(obj) {
+    function setVisible(obj) {
         var route;
         var div = document.getElementById(obj);
         div.style.visibility = (div.style.visibility == 'visible') ? 'hidden' : 'visible';
 // here I get route description (string)
         if (div.style.visibility == 'visible') {
+            if (test=${empty user}) {
+                div.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
+                div.innerHTML += "<br><br><h1>You should sign in</h1>";
+                return;
+            }
+            
             div.innerHTML = "Wait please...";
             
             $.ajax( { 
@@ -575,17 +581,17 @@
                 
                 <input type="button" value="Show Me!" id="route" onclick="generateRoute()" />
                 <input type="button" value="Drive Me!" id="stopgo"  onclick="startDriving()"  disabled />
-				<c:if test="${not empty user}">
+				<!--c:if test="${not empty user}"-->
                 <a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a>
-                </c:if>
+                <!--/c:if-->
 				<div id="body">
                 <tiles:insertAttribute name="body" />
              </div>  
-                <c:if test="${not empty user}">
+                <!--c:if test="${not empty user}"-->
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
                 </div>
-                </c:if>
+                <!--/c:if-->
         </div>
 
     </body>
