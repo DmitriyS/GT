@@ -1,1 +1,1 @@
-&copy; Hello World 2011
+&copy; YotaLab 2011

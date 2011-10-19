@@ -11,7 +11,7 @@
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA-gBHcbc-hWjWattlNwHI0BQ_gclvnbRHKqy5YZC2Jgi6EamBthSVWmQmT_kLW2NT6QuLuwHb0dBvDA" type="text/javascript"></script>
     <script type="text/javascript">
 
-	var map;
+    var map;
     var pano;
     var svClient;
     var directions;
@@ -34,6 +34,7 @@
     var selectedStep = null;
     var driving = false;
     var advanceTimer = null;
+    var isAvaliable = false;
 	
     function load() {
       if (GBrowserIsCompatible()) {
@@ -59,19 +60,19 @@
         GEvent.addListener(directions, "load", function() {
           jumpInMyCar();
         });
-		
-		if (test=${not empty user})
-                $.ajax( { 
-                      url: "http://${serverHost}:${serverPort}/demo/getRoutes",
-                      dataType: "json",
-                      success: function(data) {
-                         for (var i=0; i<data.length; i=i+2) 
-                            if (data[i]>2) addRoute(data[i], data[i+1])
-                      },
-                      error: function() {   
-                      },
-                      complete: function(){
-                      }
+/*		
+		if (test=${not empty user})*/
+        $.ajax( { 
+            url: "http://${serverHost}:${serverPort}/demo/getAllRoutes",
+            dataType: "json",
+            success: function(data) {
+                for (var i=0; i<data.length; i=i+3) 
+                    addRoute(data[i], data[i+1])
+            },
+            error: function() {   
+            },
+            complete: function(){
+            }
         }); 
       }
     }
@@ -98,6 +99,18 @@
 	
 	function changeTour() {
 		document.getElementById("route").disabled = false;
+                var id = document.getElementById("country").value;
+                $.ajax( { 
+                    url: "http://${serverHost}:${serverPort}/demo/checkRoute?routeId="+id,
+                    dataType: "json",
+                    success: function(data) { 
+                        isAvaliable = data;
+                    },
+                    error: function() {                 
+                    },
+                    complete: function(){
+                    }
+                });
 	}
 	
 	function loadFromDB() {
@@ -131,12 +144,16 @@
         div.style.visibility = (div.style.visibility == 'visible') ? 'hidden' : 'visible';
 // here I get route description (string)
         if (div.style.visibility == 'visible') {
+            div.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
             if (test=${empty user}) {
-                div.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
-                div.innerHTML += "<br><br><h1>You should sign in</h1>";
+                div.innerHTML += "<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>";
                 return;
             }
-            
+            if (test=${not empty user}) {
+                div.innerHTML += "<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route";
+                return;
+            }
+/*            
             div.innerHTML = "Wait please...";
             
             $.ajax( { 
@@ -150,15 +167,15 @@
                 },
                 complete: function(){
                 }
-            });
-            fillContent(div, route);
+            });*/
+   //         fillContent(div, route);
         }	
 
         else div.innerHTML = "";
     }
 
     // later variable i replace with a route description
-    function fillContent(obj, route) {
+/*    function fillContent(obj, route) {
         obj.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
         if (route[0] == null)
             obj.innerHTML += "<br><br><h1>You've bought all routes</h1>";
@@ -169,30 +186,21 @@
             obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
         }
     }
-
+*/
     function doSubmit() {
-        var routes = document.getElementsByName("route");
+        var id = document.getElementById("country").value;
+        var name = document.getElementById("country").options[id].text;
         var area = document.getElementById("pay");
 
-        var chosenId = 0;
-        var chosenName = "";
-        for (var i = 0; i < routes.length; i++) {
-            if (routes[i].checked) {
-                chosenId = routes[i].value;
-                chosenName = routes[i].id;
-                break;
-            }
-        }
-
         area.innerHTML = "You've bought a new route: <strong>"
-           + chosenName + "</strong>";
+           + name + "</strong>";
         area.innerHTML += "<br><br> Closing soon..."; 
         $.ajax( { 
-                    url: "http://${serverHost}:${serverPort}/demo/pay?id="+chosenId,
+                    url: "http://${serverHost}:${serverPort}/demo/pay?id="+id,
                     async: false,
                     dataType: "json",
                     success: function() { 
-                        addRoute(chosenId, chosenName);
+                        addRoute(id, name);
                     },
                     error: function() {                 
                         $('#charge-status-msg').empty().text("The last payment has failed, please try again later.");
@@ -200,6 +208,7 @@
                     complete: function(){
                     }
                 });
+        isAvaliable = true;        
         setVisible('pay');
         return false;
     }
@@ -304,9 +313,6 @@
         }
 
       } else {
-        if (driving) {
-          updateViewerDirections(progressDistance - d);
-        }
         if (d < 10) {
           close = true;
         }
@@ -382,45 +388,6 @@
       }
     }
 
-    function updateViewerDirections(distanceFromStartOfStep) {
-      var lengthOfStep = route.getStep(currentStep).getDistance().meters;
-      var distanceFromEndOfStep = (lengthOfStep - distanceFromStartOfStep);
-
-      distanceFromEndOfStep *= 3.2808399;
-
-      var uiDistance, unit;
-
-      if (distanceFromEndOfStep > 7920) {
-        distanceFromEndOfStep /= 5280;
-        uiDistance = distanceFromEndOfStep.toFixed(0);
-        unit = 'miles';
-      } else if (distanceFromEndOfStep > 4620) {
-        uiDistance = '1';
-        unit = 'mile';
-      } else if (distanceFromEndOfStep > 3300) {
-        /* Display "3/4 mile" between 5/8 and 7/8 of a mile */
-        uiDistance = '&frac34;';
-        unit = 'mile';
-      } else if (distanceFromEndOfStep > 1980) {
-        /* Display "1/2 mile" between 3/8 and 5/8 of a mile */
-        uiDistance = '&frac12;';
-        unit = 'mile';
-      } else if (distanceFromEndOfStep >  660) {
-        /* Display "1/4 mile" between 1/8 and 3/8 of a mile */
-        uiDistance = '&frac14;';
-        unit = 'mile';
-      } else {
-        uiDistance = (Math.round(distanceFromEndOfStep / 10)) * 10;
-        unit = "ft";
-      }
-
-      if (route.getStep(currentStep + 1) != undefined) {
-//        showInstruction('In ' + uiDistance + ' ' + unit + ': ' + route.getStep(currentStep + 1).getDescriptionHtml());
-      } else {
-//        showInstruction('In ' + uiDistance + ' ' + unit + ': You will reach your destination');
-      }
-    }
-
     function constructProgressArray(vertexId) {
       progressArray = new Array();
       var stepStart = stepToVertex[currentStep];
@@ -447,11 +414,6 @@
         yaw = yaw % 360;
       }
       return yaw;
-    }
-
-   function getArrowUrl(bearing) {
-      var id = (3 * Math.round(bearing / 3)) % 120;
-      return "http://maps.google.com/mapfiles/dir_" + id + ".png";
     }
 
    function collapseVertices(path) {
@@ -484,40 +446,20 @@
      }
    }
 
-    function getDirectionsWaypointHtml(address, letter) {
-     var content = getDivHtml('letter' + letter, 'letterIcon', "");
-         content += '<span class="waypointAddress">' + address + '</span>';
-      return getDivHtml("wayPoint" + letter, "waypoint", content);
-    }
-
-    function setWaypointIcon(letter) {
-      var png = 'http://maps.google.com/intl/en_us/mapfiles/icon_green' + letter + '.png';
-      document.getElementById('letter' + letter).style.backgroundImage = 'url(' + png + ')';
-    }
-
-    function getDivHtml(id, cssClass, content) {
-      var div = "<div";
-      if (id != "") {
-        div += ' id="' + id + '"';
-      }
-
-      if (cssClass != "") {
-        div += ' class="' + cssClass + '"';
-      }
-
-      div += '>' + content + '</div>';
-      return div;
-    }
-
     function startDriving() {
-      document.getElementById("route").disabled = true;
-      document.getElementById("stopgo").value = "Stop Me!";
-      document.getElementById("stopgo").setAttribute('onclick', 'stopDriving()'); 
-      document.getElementById("stopgo").onclick = function() { stopDriving(); }
-      driving = true;
-      advance();
+      if (isAvaliable) {
+          document.getElementById("route").disabled = true;
+          document.getElementById("stopgo").value = "Stop Me!";
+          document.getElementById("stopgo").setAttribute('onclick', 'stopDriving()'); 
+          document.getElementById("stopgo").onclick = function() { stopDriving(); }
+          driving = true;
+          advance();
+      }
+      else {
+          setVisible('pay');
+      }
     }
-
+    
     function stopDriving() {
       driving = false;
       if (advanceTimer != null) {
@@ -575,15 +517,16 @@
                 <b>Choose Tour:</b><br>
                 <select id="country" onchange="changeTour()">
                     <option value="0" disabled>Choose Tour:</option>
-                    <option value="1">Sights</option>                
-                    <option value="2">Impressionism</option>
+                    <!--option value="1">Sights</option>                
+                    <option value="2">Impressionism</option-->
                 </select>
                 
                 <input type="button" value="Show Me!" id="route" onclick="generateRoute()" />
                 <input type="button" value="Drive Me!" id="stopgo"  onclick="startDriving()"  disabled />
 				<!--c:if test="${not empty user}"-->
-                <a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a>
+                <!--a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a-->
                 <!--/c:if-->
+                <a href="<%=request.getContextPath()%>/demo/qos">QoS</a> 
 				<div id="body">
                 <tiles:insertAttribute name="body" />
              </div>  

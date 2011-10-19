@@ -1,7 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<link rel="stylesheet" type="text/css" href="../static/styles/style.css"/>
 <c:if test="${not empty profile}">
+    
 	<div id="profile">
                 <p>Balance: ${profile.balance} RUB</p>
 		<p>Purchases History:</p>
@@ -22,6 +24,11 @@
 			</c:forEach>
 		</table>
 	</div>
+                                
+        <div id="backButton">
+            <a href="<%=request.getContextPath()%>/demo/main">Back</a>
+        </div> 
+        
 </c:if>
 <c:if test="${empty profile}">
 	<span class="info-msg">${errorMsg}</span>

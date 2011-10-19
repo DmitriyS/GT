@@ -30,13 +30,20 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.yota.top.sdk.IdentityServiceClient;
 import com.yota.top.sdk.PaymentServiceClient;
+import com.yota.top.sdk.QoSServiceClient;
 import com.yota.top.sdk.SubscriberInfoServiceClient;
 import com.yota.top.sdk.TopApiException;
 import com.yota.top.sdk.impl.IdentityServiceClientImpl;
 import com.yota.top.sdk.impl.PaymentServiceClientImpl;
+import com.yota.top.sdk.impl.QoSServiceClientImpl;
 import com.yota.top.sdk.impl.SubscriberInfoServiceClientImpl;
 import com.yota.top.sdk.model.payment.TransactionRecord;
 import com.yota.top.sdk.model.payment.TransactionInfo;
+import com.yota.top.sdk.model.qos.CallbackReference;
+import com.yota.top.sdk.model.qos.MediaProperty;
+import com.yota.top.sdk.model.qos.ProtocolType;
+import com.yota.top.sdk.model.qos.QosFeatureData;
+import com.yota.top.sdk.model.qos.QosFeatureProperties;
 import java.io.FileInputStream;
 import test.group.ui.bean.*;
 import test.group.utils.TransactionRecordComparator;
@@ -85,6 +92,8 @@ public class HelloWorldController {
     private static final String SESSION_ATTR_API_KEY = "apiKey";
     private static final String SESSION_ATTR_USER = "user";
     private static final String USER_NAME = "userName";
+    
+    private final QoSServiceClient qosServiceClient = new QoSServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
 
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
@@ -176,6 +185,15 @@ public class HelloWorldController {
             user.setLastName(surname);
             user.setEmail(email);
             session.save(user);
+            trns.commit();
+            
+            trns = session.beginTransaction();
+            List<Route> r = session.createQuery("from Route where cost = 0").
+                    list();
+            for (Iterator<Route> iter = r.iterator(); iter.hasNext();) {
+                Route route = iter.next();
+                addRoute(id, route.getId());
+            }    
             trns.commit();
         } catch (RuntimeException e) {
             if (trns != null) {
@@ -295,7 +313,7 @@ public class HelloWorldController {
        return points;
       } 
     }
-    
+/*    
     @RequestMapping("/getRoutes")
     public @ResponseBody
             ArrayList getRoutes(HttpServletRequest req, HttpServletResponse res)
@@ -327,6 +345,97 @@ public class HelloWorldController {
            session.close();
            return data;
         } 
+    }
+*/
+    
+    @RequestMapping("/getAllRoutes")
+    public @ResponseBody
+            ArrayList getRoutes(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, TopApiException {
+        ArrayList data = new ArrayList();
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+           trns = session.beginTransaction();
+           List<Route> routes = session.createQuery("from Route")
+           .list();
+           for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {
+                Route route = iter.next();
+                data.add(route.getId());
+                data.add(route.getDescription());
+                data.add(route.getCost());
+           }
+           trns.commit();
+        } catch (RuntimeException e) {
+           if(trns != null){
+            trns.rollback();
+           }
+           e.printStackTrace();
+        } finally{
+           session.flush();
+           session.close();
+           return data;
+        } 
+    }
+    
+   @RequestMapping("/checkRoute")
+    public @ResponseBody
+            boolean checkRoute(@RequestParam(required = false, value = "routeId") String routeId,
+            HttpServletRequest req, HttpServletResponse res)
+            throws IOException, TopApiException {
+        Transaction trns = null;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        final User user = getCurrentUser(req);
+        boolean flag = false;
+        Long route = Long.parseLong(routeId);
+        if (user == null) {
+            try {
+               trns = session.beginTransaction();
+               List<Route> routes = session.createQuery("from Route where cost = 0")
+               .list();
+               for (Iterator<Route> iter = routes.iterator(); iter.hasNext();) {
+                    Route r = iter.next();
+                    if (r.getId().equals(route)){
+                        flag = true; break;
+                    }
+               }
+               trns.commit();
+            } catch (RuntimeException e) {
+               if(trns != null){
+                trns.rollback();
+               }
+               e.printStackTrace();
+            } finally{
+               session.flush();
+               session.close();
+               return flag;
+            }
+        }
+        else {
+            Long id = user.getId();
+            try {
+               trns = session.beginTransaction();
+               List<UserRoutes> routes = session.createQuery("from UserRoutes where uid = :id)")
+               .setLong( "id", id )
+               .list();
+               for (Iterator<UserRoutes> iter = routes.iterator(); iter.hasNext();) {
+                    UserRoutes compare = iter.next();
+                    if (compare.getRid().equals(route)){
+                        flag = true; break;
+                    }
+               }
+               trns.commit();
+            } catch (RuntimeException e) {
+               if(trns != null){
+                trns.rollback();
+               }
+               e.printStackTrace();
+            } finally{
+               session.flush();
+               session.close();
+               return flag;
+            }
+        }    
     }
     
     @RequestMapping("/getRoutesToBuy")
@@ -363,6 +472,38 @@ public class HelloWorldController {
         } 
     }
 
+    @RequestMapping("/qos")
+    public ModelAndView applyQos(HttpServletRequest req) throws TopApiException{
+        String inIp = "127.0.0.1";
+        String inPort = "8080";
+        String outIp = "209.85.149.*";
+        String outPort = "80";
+	QosFeatureProperties qosFeatureProperties = new QosFeatureProperties();
+        MediaProperty mediaProperty = new MediaProperty();
+        mediaProperty.setInIp(inIp);
+        mediaProperty.setInPort(inPort);
+        mediaProperty.setOutIp(outIp);
+        mediaProperty.setOutPort(outPort);
+        mediaProperty.setProtocolType(ProtocolType.RTCP);
+
+        qosFeatureProperties.setDuration(7200);
+        qosFeatureProperties.setMaxDBw(3000);
+        qosFeatureProperties.setMaxUBw(1000);
+        qosFeatureProperties.getMediaProps().add(mediaProperty);
+
+        CallbackReference qosNotificationCallback = new CallbackReference();
+        qosNotificationCallback.setCallbackData("String sefe");
+        qosNotificationCallback.setNotifyURL("http://" + req.getServerName() + ':' + req.getServerPort()
+        + req.getContextPath() + "/rest/notifyQoSEvent");
+
+        QosFeatureData resp = qosServiceClient.applyQoSFeature(inIp, "demo QoS", qosFeatureProperties, qosNotificationCallback);
+
+        String sfId = resp.getSfId();
+        System.out.println("!!!!!! " + sfId + " !!!!!!!!");
+        
+        return new ModelAndView(MAIN_VIEW);
+    }
+    
     private User getCurrentUser(HttpServletRequest req) {
 	final Object userObj = req.getSession().getAttribute(SESSION_ATTR_USER);
 
