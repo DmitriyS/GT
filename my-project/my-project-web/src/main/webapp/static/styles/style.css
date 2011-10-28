@@ -30,6 +30,7 @@ table#payment-history th { text-align: center; border: 1px solid #c0c0c0; font: 
 table#payment-history td { text-align: left; border: 1px solid #c0c0c0; font: normal 14px tahoma; }
 
 #pay {
+        overflow: scroll;
 	position: absolute;
 	visibility: hidden;
 	width: 400px;

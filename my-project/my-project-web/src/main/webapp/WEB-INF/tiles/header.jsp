@@ -10,7 +10,7 @@
     <c:if test="${not empty user}">    
     	<a href="<%=request.getContextPath()%>/demo/main">Home</a>
         <a href="<%=request.getContextPath()%>/demo/logout">Logout</a>
-        <a href="<%=request.getContextPath()%>/demo/profile" style="float:right;">${userName}</a>
+        <a href='javascript:getTransactions()' style="float:right;">${userName}</a>
     </c:if>    
 
 </div>

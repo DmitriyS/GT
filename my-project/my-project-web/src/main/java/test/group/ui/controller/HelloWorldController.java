@@ -78,6 +78,7 @@ public class HelloWorldController {
     private static final String PAYMENT_URL = properties.getProperty("payment_url");
     private static final String IDENTITY_URL = properties.getProperty("identity_url");
     private static final String SUBSCRIBER_URL = properties.getProperty("subscriber_url");
+    private static final String QOS_URL = properties.getProperty("qos_url");
     
     private static final String LOGIN_PAGE = properties.getProperty("login_page");
     private static final String MAIN_VIEW = properties.getProperty("main_view");
@@ -93,14 +94,14 @@ public class HelloWorldController {
     private static final String SESSION_ATTR_USER = "user";
     private static final String USER_NAME = "userName";
     
-    private final QoSServiceClient qosServiceClient = new QoSServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
-
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
     private static final IdentityServiceClient identityServiceClient = 
 	new IdentityServiceClientImpl(IDENTITY_URL, API_KEY, API_SECRET);
     private static final SubscriberInfoServiceClient subscriberInfoServiceClient = 
 	new SubscriberInfoServiceClientImpl(SUBSCRIBER_URL, API_KEY, API_SECRET);
+    private final QoSServiceClient qosServiceClient = 
+            new QoSServiceClientImpl(QOS_URL, API_KEY, API_SECRET);
 
     @RequestMapping("/main")
     public ModelAndView main(HttpServletRequest req, HttpServletResponse res) {
@@ -118,7 +119,7 @@ public class HelloWorldController {
         
 	return new ModelAndView(MAIN_VIEW);
     }
-    
+/*    
     @RequestMapping("/profile")
     public ModelAndView balance(HttpServletRequest req) {
 	try {
@@ -138,6 +139,29 @@ public class HelloWorldController {
 	    return new ModelAndView(PROFILE_VIEW, "profile", userProfile);
 	} catch (TopApiException ex) {
 	    return new ModelAndView(PROFILE_VIEW, "errorMsg", ex.getMessage());
+	}
+    }
+*/
+    
+    @RequestMapping("/profile")
+    public void balance(HttpServletRequest req) {
+	try {
+	    final User currentUser = getCurrentUser(req);
+
+	    if (currentUser == null) {
+		return;
+	    }
+
+	    final UserProfile userProfile = new UserProfile();
+	    final BigDecimal balance = paymentServiceClient.getBalance(currentUser.getAccessToken());
+	    final List<TransactionRecord> transactionHistory = paymentServiceClient.getTransactionHistory(
+		    currentUser.getAccessToken(), null, null);
+	    Collections.sort(transactionHistory, new TransactionRecordComparator());
+	    userProfile.setBalance(balance.toString());
+	    userProfile.setTransactionHistory(transactionHistory);
+	    return;
+	} catch (TopApiException ex) {
+	    return;
 	}
     }
     
@@ -473,11 +497,12 @@ public class HelloWorldController {
     }
 
     @RequestMapping("/qos")
-    public ModelAndView applyQos(HttpServletRequest req) throws TopApiException{
-        String inIp = "127.0.0.1";
-        String inPort = "8080";
-        String outIp = "209.85.149.*";
-        String outPort = "80";
+    public @ResponseBody
+            String applyQos(HttpServletRequest req) throws TopApiException{
+        String inIp = "10.0.0.1";
+        String inPort = "8888";
+        String outIp = "10.0.0.2";
+        String outPort = "9999";
 	QosFeatureProperties qosFeatureProperties = new QosFeatureProperties();
         MediaProperty mediaProperty = new MediaProperty();
         mediaProperty.setInIp(inIp);
@@ -486,22 +511,23 @@ public class HelloWorldController {
         mediaProperty.setOutPort(outPort);
         mediaProperty.setProtocolType(ProtocolType.RTCP);
 
-        qosFeatureProperties.setDuration(7200);
-        qosFeatureProperties.setMaxDBw(3000);
-        qosFeatureProperties.setMaxUBw(1000);
+        qosFeatureProperties.setDuration(100);
+        qosFeatureProperties.setMaxDBw(300);
+        qosFeatureProperties.setMaxUBw(200);
         qosFeatureProperties.getMediaProps().add(mediaProperty);
 
         CallbackReference qosNotificationCallback = new CallbackReference();
-        qosNotificationCallback.setCallbackData("String sefe");
-        qosNotificationCallback.setNotifyURL("http://" + req.getServerName() + ':' + req.getServerPort()
-        + req.getContextPath() + "/rest/notifyQoSEvent");
-
-        QosFeatureData resp = qosServiceClient.applyQoSFeature(inIp, "demo QoS", qosFeatureProperties, qosNotificationCallback);
+        qosNotificationCallback.setCallbackData("Callback Data");
+        qosNotificationCallback.setApiKey(API_KEY);
+        qosNotificationCallback.setNotifyURL("http://10.2.177.116:8888/qos_notification");
+        qosNotificationCallback.setOrigNotifyURL("http://nofity.url");
+        
+        QosFeatureData resp = 
+                qosServiceClient.applyQoSFeature("10.2.172.30", "QoSVideo", qosFeatureProperties, qosNotificationCallback);
 
         String sfId = resp.getSfId();
-        System.out.println("!!!!!! " + sfId + " !!!!!!!!");
         
-        return new ModelAndView(MAIN_VIEW);
+        return sfId;
     }
     
     private User getCurrentUser(HttpServletRequest req) {

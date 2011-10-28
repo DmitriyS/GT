@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -60,8 +61,7 @@
         GEvent.addListener(directions, "load", function() {
           jumpInMyCar();
         });
-/*		
-		if (test=${not empty user})*/
+		
         $.ajax( { 
             url: "http://${serverHost}:${serverPort}/demo/getAllRoutes",
             dataType: "json",
@@ -137,56 +137,60 @@
             cityPoints.push(obj);
         }    
     }
+    
+    function getTransactions() {
+        var history = [];
+        if (test=${empty user}) {
+            history = [
+                "<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>"
+            ]
+        }
+        if (test=${not empty user}) {
+            history = [
+                "<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route"
+            ]
+        }
+        
+        $.ajax( { 
+                    url: "http://${serverHost}:${serverPort}/demo/profile",
+                    dataType: "json",
+                    async: false,
+                    success: function() {
+                        setVisible('pay', history);
+                    },
+                    error: function() {
+                        
+                    },
+                    complete: function(){
+                    }
+        });
+    }
 
-    function setVisible(obj) {
-        var route;
+    function setVisible(obj, content) {
         var div = document.getElementById(obj);
         div.style.visibility = (div.style.visibility == 'visible') ? 'hidden' : 'visible';
-// here I get route description (string)
+
         if (div.style.visibility == 'visible') {
             div.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
-            if (test=${empty user}) {
-                div.innerHTML += "<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>";
-                return;
-            }
-            if (test=${not empty user}) {
-                div.innerHTML += "<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route";
-                return;
-            }
-/*            
-            div.innerHTML = "Wait please...";
-            
-            $.ajax( { 
-                url: "http://${serverHost}:${serverPort}/demo/getRoutesToBuy",
-                async: false,
-                dataType: "json",
-                success: function(data) {
-                    route = data;
-                },
-                error: function() {  
-                },
-                complete: function(){
-                }
-            });*/
-   //         fillContent(div, route);
+            fillContent(div, content);
         }	
-
         else div.innerHTML = "";
     }
 
     // later variable i replace with a route description
-/*    function fillContent(obj, route) {
-        obj.innerHTML = "<span id=close><a href=javascript:setVisible('pay') style=text-decoration: none><strong>Hide</strong></a></span>";
-        if (route[0] == null)
-            obj.innerHTML += "<br><br><h1>You've bought all routes</h1>";
-        else {
-            obj.innerHTML += "<h1>Choose Route:</h1>";
-            for (var i=0; i<route.length; i=i+3)
-                obj.innerHTML += "<p><input type=radio name=route id=" + route[i+1] + " value=" + route[i] + "><label for=" + route[i+1] + ">" + route[i+1] + ",  " + route[i+2] + " Rub" + "</label></p>";
-            obj.innerHTML += "<p style=text-align:" + "right" + ";><input type=submit value=Submit onclick=doSubmit()></p>";
+    function fillContent(div, content) {
+        for (var i=0; i<content.length; i++)
+            div.innerHTML += content[i]
+        if (test=${empty user}) {
+            div.innerHTML += "<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>";
+            return;
+        }
+        if (test=${not empty user}) {
+            div.innerHTML += "<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route";
+            return;
         }
     }
-*/
+
     function doSubmit() {
         var id = document.getElementById("country").value;
         var name = document.getElementById("country").options[id].text;
@@ -499,6 +503,20 @@
     Number.prototype.toBrng = function() {
       return (this.toDeg()+360) % 360;
     }
+    
+    function setQos() {
+        $.ajax( { 
+                    url: "http://${serverHost}:${serverPort}/demo/qos"
+/*                    dataType: "json",
+                    success: function(data) { 
+                        GLog.write(data);
+                    },
+                    error: function() {                 
+                    },
+                    complete: function(){
+                    }*/
+        });
+    }
     </script>
   <link rel="stylesheet" type="text/css" href="../static/styles/style.css"/>
   </head>
@@ -517,24 +535,23 @@
                 <b>Choose Tour:</b><br>
                 <select id="country" onchange="changeTour()">
                     <option value="0" disabled>Choose Tour:</option>
-                    <!--option value="1">Sights</option>                
-                    <option value="2">Impressionism</option-->
                 </select>
                 
                 <input type="button" value="Show Me!" id="route" onclick="generateRoute()" />
                 <input type="button" value="Drive Me!" id="stopgo"  onclick="startDriving()"  disabled />
-				<!--c:if test="${not empty user}"-->
-                <!--a href="#" onclick="setVisible('pay');return false" target="_self" id="charge">Buy!</a-->
-                <!--/c:if-->
-                <a href="<%=request.getContextPath()%>/demo/qos">QoS</a> 
-				<div id="body">
+
+                <a href="javascript:setQos()">QoS</a>
+                
+		<div id="body">
                 <tiles:insertAttribute name="body" />
-             </div>  
-                <!--c:if test="${not empty user}"-->
+                </div>  
+                                
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
                 </div>
-                <!--/c:if-->
+                
+                <div id="profile">
+                </div>    
         </div>
 
     </body>
