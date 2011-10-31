@@ -138,32 +138,9 @@
         }    
     }
     
-    function getTransactions() {
-        var history = [];
-        if (test=${empty user}) {
-            history = [
-                "<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>"
-            ]
-        }
-        if (test=${not empty user}) {
-            history = [
-                "<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route"
-            ]
-        }
-        
-        $.ajax( { 
-                    url: "http://${serverHost}:${serverPort}/demo/profile",
-                    dataType: "json",
-                    async: false,
-                    success: function() {
-                        setVisible('pay', history);
-                    },
-                    error: function() {
-                        
-                    },
-                    complete: function(){
-                    }
-        });
+    function openWindow(url) {
+        var features = "status=1,resizable=no,scrollbars=1,width=800,height=515";
+        window.open(url, "Profile", features);
     }
 
     function setVisible(obj, content) {
@@ -181,14 +158,6 @@
     function fillContent(div, content) {
         for (var i=0; i<content.length; i++)
             div.innerHTML += content[i]
-        if (test=${empty user}) {
-            div.innerHTML += "<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>";
-            return;
-        }
-        if (test=${not empty user}) {
-            div.innerHTML += "<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route";
-            return;
-        }
     }
 
     function doSubmit() {
@@ -212,8 +181,9 @@
                     complete: function(){
                     }
                 });
-        isAvaliable = true;        
-        setVisible('pay');
+        isAvaliable = true;
+        
+        setVisible('pay', null);
         return false;
     }
     
@@ -460,7 +430,13 @@
           advance();
       }
       else {
-          setVisible('pay');
+          var content = [];
+          if (test=${empty user})
+          content = ["<br><br><h1>You should <a href=${identityLocation}/rest/1/identity/authorize?response_type=code&providerId=yota&client_id=${apiKey}&redirect_uri=${redirect_uri}>sign in</a></h1>"];
+          if (test=${not empty user})
+          content = ["<br><br><h1>You should <a href=javascript:doSubmit() style=text-decoration: none><strong>buy</strong></a> this route"];
+          
+          setVisible('pay', content);
       }
     }
     
@@ -505,17 +481,7 @@
     }
     
     function setQos() {
-        $.ajax( { 
-                    url: "http://${serverHost}:${serverPort}/demo/qos"
-/*                    dataType: "json",
-                    success: function(data) { 
-                        GLog.write(data);
-                    },
-                    error: function() {                 
-                    },
-                    complete: function(){
-                    }*/
-        });
+        $.ajax({ url: "http://${serverHost}:${serverPort}/demo/qos" });
     }
     </script>
   <link rel="stylesheet" type="text/css" href="../static/styles/style.css"/>
@@ -540,18 +506,21 @@
                 <input type="button" value="Show Me!" id="route" onclick="generateRoute()" />
                 <input type="button" value="Drive Me!" id="stopgo"  onclick="startDriving()"  disabled />
 
-                <a href="javascript:setQos()">QoS</a>
+                <a href="javascript:setQos()" style="float:right;">QoS</a>
                 
-		<div id="body">
+		<!--div id="body">
                 <tiles:insertAttribute name="body" />
-                </div>  
+                </div-->  
                                 
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
                 </div>
                 
-                <div id="profile">
-                </div>    
+                <!--div id="profile">
+                </div>
+                <div id="close_window">
+                </div-->
+                
         </div>
 
     </body>

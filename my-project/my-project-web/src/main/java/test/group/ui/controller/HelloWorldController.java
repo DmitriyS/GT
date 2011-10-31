@@ -94,6 +94,8 @@ public class HelloWorldController {
     private static final String SESSION_ATTR_USER = "user";
     private static final String USER_NAME = "userName";
     
+    private String sfId = null;
+    
     private static final PaymentServiceClient paymentServiceClient = 
 	new PaymentServiceClientImpl(PAYMENT_URL, API_KEY, API_SECRET);
     private static final IdentityServiceClient identityServiceClient = 
@@ -119,7 +121,7 @@ public class HelloWorldController {
         
 	return new ModelAndView(MAIN_VIEW);
     }
-/*    
+    
     @RequestMapping("/profile")
     public ModelAndView balance(HttpServletRequest req) {
 	try {
@@ -141,10 +143,10 @@ public class HelloWorldController {
 	    return new ModelAndView(PROFILE_VIEW, "errorMsg", ex.getMessage());
 	}
     }
-*/
-    
+/*    
     @RequestMapping("/profile")
-    public void balance(HttpServletRequest req) {
+    public @ResponseBody
+            void balance(HttpServletRequest req) {
 	try {
 	    final User currentUser = getCurrentUser(req);
 
@@ -159,12 +161,15 @@ public class HelloWorldController {
 	    Collections.sort(transactionHistory, new TransactionRecordComparator());
 	    userProfile.setBalance(balance.toString());
 	    userProfile.setTransactionHistory(transactionHistory);
+            req.getSession().setAttribute(PROFILE, userProfile);
+            req.getSession().setAttribute(BALANCE, balance.toString());
+            req.getSession().setAttribute(USER_PROFILE, transactionHistory);
 	    return;
 	} catch (TopApiException ex) {
 	    return;
 	}
     }
-    
+*/    
     @RequestMapping("/login")
     public ModelAndView login(@RequestParam(required = false, 
             value = REQUEST_PARAM_CODE) String code,
@@ -187,7 +192,7 @@ public class HelloWorldController {
             req.getSession().setAttribute(USER_NAME, firstname);
             storeToDB(id, firstname, lastname, email);
 	}
-        return new ModelAndView(new RedirectView(MAIN_VIEW));
+        return new ModelAndView("close_window");
     }
     
     public void storeToDB(Long id, String name, String surname, String email) {
@@ -498,7 +503,13 @@ public class HelloWorldController {
 
     @RequestMapping("/qos")
     public @ResponseBody
-            String applyQos(HttpServletRequest req) throws TopApiException{
+            void applyQos(HttpServletRequest req) throws TopApiException {
+        if (sfId != null) {
+            qosServiceClient.removeQoSFeature(sfId);
+            sfId = null;
+            return;
+        }
+        
         String inIp = "10.0.0.1";
         String inPort = "8888";
         String outIp = "10.0.0.2";
@@ -525,9 +536,9 @@ public class HelloWorldController {
         QosFeatureData resp = 
                 qosServiceClient.applyQoSFeature("10.2.172.30", "QoSVideo", qosFeatureProperties, qosNotificationCallback);
 
-        String sfId = resp.getSfId();
+        sfId = resp.getSfId();
         
-        return sfId;
+        return;
     }
     
     private User getCurrentUser(HttpServletRequest req) {

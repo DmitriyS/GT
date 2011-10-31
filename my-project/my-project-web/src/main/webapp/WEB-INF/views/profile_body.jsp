@@ -5,7 +5,7 @@
 <c:if test="${not empty profile}">
     
 	<div id="profile">
-                <p>Balance: ${profile.balance} RUB</p>
+            <p><strong>Balance:</strong> ${profile.balance} RUB</p>
 		<p>Purchases History:</p>
 		<table id="payment-history" cellspacing=0 cellpadding=0>
 			<tr>
@@ -24,10 +24,10 @@
 			</c:forEach>
 		</table>
 	</div>
-                                
-        <div id="backButton">
-            <a href="<%=request.getContextPath()%>/demo/main">Back</a>
-        </div> 
+                                <br>                        
+        <!--div id="backButton">
+            <a href="<%=request.getContextPath()%>/demo/main" style="float:left;">Back</a>
+        </div--> 
         
 </c:if>
 <c:if test="${empty profile}">

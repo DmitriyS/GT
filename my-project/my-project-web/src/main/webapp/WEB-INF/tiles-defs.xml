@@ -7,10 +7,8 @@
 <tiles-definitions>
 
     <definition name="baseLayout" template="/WEB-INF/tiles/baseLayout.jsp">
-        <put-attribute name="title" value="Template"/>
+        <put-attribute name="title" value="Google Tours"/>
         <put-attribute name="header" value="/WEB-INF/tiles/header.jsp"/>
-        <!--put-attribute name="body" value="/WEB-INF/tiles/body.jsp"-->
-        <put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"/>
     </definition>
 
     <definition name="main" extends="baseLayout">
@@ -20,8 +18,8 @@
 
     <definition name="profile" template="/WEB-INF/views/profile_body.jsp">
         <put-attribute name="title" value="Google Tours: Profile"/>
-        <!--put-attribute name="body" value="/WEB-INF/views/profile_body.jsp"/-->
-        <put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp"/>
     </definition>
+    
+    <definition name="close_window" template="/WEB-INF/tiles/close_window.jsp"/>
     
 </tiles-definitions>
