@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title><tiles:getAsString name="title" ignore="true" /></title>       
-        <script type="text/javascript" src="../static/js/jquery-1.6.2.min.js"></script> 
+    <script type="text/javascript" src="../static/js/jquery-1.6.2.min.js"></script> 
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA-gBHcbc-hWjWattlNwHI0BQ_gclvnbRHKqy5YZC2Jgi6EamBthSVWmQmT_kLW2NT6QuLuwHb0dBvDA" type="text/javascript"></script>
     <script type="text/javascript">
 
