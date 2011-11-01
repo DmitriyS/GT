@@ -25,7 +25,7 @@
         <a href="<%=request.getContextPath()%>/demo/logout">Logout</a>
         <!--a href='javascript:getTransactions()' style="float:right;">${userName}</a-->
         <!--a href="<%=request.getContextPath()%>/demo/profile" style="float:right;">${userName}</a-->
-        <a href="javascript:openWindow('<%=request.getContextPath()%>/demo/profile')" style="float:right;">${userName}</a>
+        <a href="javascript:openWindow('<%=request.getContextPath()%>/demo/profile')" style="float:right;">${userName} Profile</a>
     </c:if>    
 
 </div>

@@ -4,18 +4,18 @@
         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-                        <!-- This options are for PostgreSQL DB -->  
+                        <!-- This options are for PostgreSQL DB >  
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/postgres</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="connection.password">postgres</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-                         <!-- This options are for MySQL DB >
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property-->
+                         <!-- This options are for MySQL DB -->
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/dsavin</property>
         <property name="hibernate.connection.username">dsavin</property>
         <property name="hibernate.connection.password">wbzO1lrY</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property-->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
                                 <!-- Another options -->
         <property name="connection.pool_size">1</property>
         <property name="current_session_context_class">thread</property>
