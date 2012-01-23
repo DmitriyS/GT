@@ -507,20 +507,10 @@
                 <input type="button" value="Drive Me!" id="stopgo"  onclick="startDriving()"  disabled />
 
                 <a href="javascript:setQos()" style="float:right;">QoS</a>
-                
-		<!--div id="body">
-                <tiles:insertAttribute name="body" />
-                </div-->  
                                 
                 <div id="pay">
 		<p id="charge-status-msg" class="info-msg"></p> 
                 </div>
-                
-                <!--div id="profile">
-                </div>
-                <div id="close_window">
-                </div-->
-                
         </div>
 
     </body>
