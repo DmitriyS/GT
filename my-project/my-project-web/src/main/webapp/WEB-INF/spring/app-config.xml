@@ -11,7 +11,7 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 		default-autowire="byName">
 	<!-- Spring configuration for web tier -->
-    <context:component-scan base-package="test.group.ui.controller">
+    <context:component-scan base-package="webapp.ui.controller">
     	<context:include-filter type="annotation"
             expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
